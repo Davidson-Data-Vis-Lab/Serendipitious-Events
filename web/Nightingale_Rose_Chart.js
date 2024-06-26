@@ -9,7 +9,7 @@ class Nightingale_Rose_Chart{
             parentElement: _config.parentElement,
             containerWidth: _config.containerWidth || 600,
             containerHeight: _config.containerHeight || 800,
-            margin: _config.margin || {top: 5, right: 20, bottom: 20, left: 20}
+            margin: _config.margin || {top: 10, right: 20, bottom: 10, left: 20}
         }
         this.originalData = _data; // Store the original data
         this.selectedCategory = null; // Track the selected category
@@ -33,10 +33,10 @@ class Nightingale_Rose_Chart{
 
         vis.svg = d3.select(vis._config.parentElement)
                     .append('svg')
-                    .attr("width", vis._config.containerWidth)
-                    .attr("height", vis._config.containerHeight)
+                    .attr("width", vis.width)
+                    .attr("height", vis.height)
                     .attr("viewBox", [-vis.width / 2, -vis.height / 2, vis.width, vis.height])
-                    .attr("style", "width: 100%; font: 10px sans-serif;");
+                    .attr("style", "width: 100%; height: 100% ; font: 12px sans-serif;");
         
         //Data needs to be initiated to fill color keys
         vis.processData();
@@ -267,72 +267,80 @@ class Nightingale_Rose_Chart{
                         .innerRadius(interpolateInner(t))
                         .outerRadius(interpolateOuter(t))(d);
                 };
-            });
-    
-        // Add circles for each event
-        if (vis.selectedCategory != null) {
-            vis.ring.selectAll("g")
-                .data(vis.data)
-                .join("g")
-                .attr("fill", d => vis.color(d.key)) // Fill the color according to colors assigned
-                .each(function (d) {
+            })
+            if (vis.selectedCategory != null) {
+                let circlesGroup = vis.ring.selectAll("g.circles-group")
+                    .data([vis.data])
+                    .join("g")
+                    .attr("class", "circles-group");
+                
+                vis.data.forEach(d => {
                     d.forEach(e => {
+                        console.log("e is ", e);
                         if (e.data[vis.selectedCategory] !== undefined) {
                             const daysInMonth = vis.daysInMonth[vis.monthNames[e.data.month - 1]];
                             const startAngle = vis.x(vis.monthNames[e.data.month - 1]);
                             const endAngle = startAngle + vis.x.bandwidth();
                             const arcHeight = vis.outerRadius - vis.innerRadius;
                             const arcWidth = endAngle - startAngle;
-                            const paddingRadius = daysInMonth >= 30? arcHeight/11 : arcHeight/10;
+                            const paddingRadius = daysInMonth >= 30 ? arcHeight / 11 : arcHeight / 10;
 
                             const circlesPerLine = Math.floor(daysInMonth / 3);
-                            
 
                             for (let i = 0; i < daysInMonth; i++) {
                                 let lineIndex = Math.floor(i / circlesPerLine);
                                 let positionInLine = i % circlesPerLine;
 
-                                // If there are extra events, add them to the middle line
                                 if (lineIndex >= 3) {
                                     lineIndex = 1;
-                                    positionInLine += circlesPerLine; // Adjust position in line for overflow
+                                    positionInLine += circlesPerLine;
                                 }
 
-                                const radius = vis.innerRadius + paddingRadius * positionInLine + 10; // Position circles in straight lines
+                                const radius = vis.innerRadius + paddingRadius * positionInLine + 10;
                                 const angle = startAngle + (lineIndex + 1) * (arcWidth / 4);
-                                const circleRadius = paddingRadius/2.5;
+                                const circleRadius = paddingRadius / 2.5;
                                 const date = i + 1;
                                 
-                                d3.select(this).append("circle")
+                                const count = vis.originalData.filter(data => data.month === e.data.month && data.date === date && data.category === vis.selectedCategory).length;
+                                circlesGroup.append("circle")
+                                    .datum({ month: e.data.month, date: date, count: count })
+                                    .attr("class", "date-circle")
                                     .attr("cx", radius * Math.cos(angle - Math.PI / 2))
                                     .attr("cy", radius * Math.sin(angle - Math.PI / 2))
-                                    .attr("r", circleRadius) // Radius of each circle
-                                    .attr("fill", "#FFF") // Color of the circles
-                                    .attr('fill-opacity', 0.8)
-                                    .on("mouseover", (event) => {
-                                        console.log(vis.originalData);
-                                        const count = vis.originalData.filter(data => data.month === e.data.month && data.date === date && data.category === vis.selectedCategory).length;
-                                        tooltip.style("visibility", "visible")
-                                            .text(`Date: ${vis.monthNames[e.data.month - 1]} ${date}, Events: ${count}`)
-                                            .style("top", (event.pageY - 10) + "px")
-                                            .style("left", (event.pageX + 10) + "px");
-                                    })
-                                    .on("mousemove", (event) => {
-                                        tooltip.style("top", (event.pageY - 10) + "px")
-                                            .style("left", (event.pageX + 10) + "px");
-                                    })
-                                    .on("mouseout", () => {
-                                        tooltip.style("visibility", "hidden");
-                                    })
-                                    .on("click", () => {
-                                        vis.renderEventCircles(e.data.month, date, vis.selectedCategory);
-                                    });;
+                                    .attr("r", 0)  // Start with radius 0
+                                    .attr("fill-opacity", 0.8)
+                                    .transition()
+                                    .delay(600)  // Delay for 1 second
+                                    .duration(500)  // Animation duration
+                                    .attr("r", circleRadius);  // End with target radius
+
+
+                                circlesGroup.selectAll("circle")
+                                .on("mouseover", (event, d) => {
+                                    tooltip.style("visibility", "visible")
+                                        .text(`Date: ${vis.monthNames[d.month - 1]} ${d.date}, Events: ${d.count}`)
+                                        .style("top", (event.pageY - 10) + "px")
+                                        .style("left", (event.pageX + 10) + "px");
+                                })
+                                .on("mousemove", (event) => {
+                                    tooltip.style("top", (event.pageY - 10) + "px")
+                                        .style("left", (event.pageX + 10) + "px");
+                                })
+                                .on("mouseout", () => {
+                                    tooltip.style("visibility", "hidden");
+                                })
+                                .on("click", function(event, d) {
+                                    d3.selectAll(".date-circle").classed("selected-circle", false);
+                                    d3.select(this).classed("selected-circle", true);
+                                    vis.renderEventCircles(d.month, d.date, vis.selectedCategory);
+                                    event.stopPropagation();
+                                });
                         }
-    
+
                             // Add count text on top of each arc
                             const textRadius = vis.outerRadius + 10;
                             const textAngle = startAngle + (arcWidth / 2);
-                            d3.select(this).append("text")
+                            vis.ring.append("text")
                                 .attr("x", textRadius * Math.cos(textAngle - Math.PI / 2))
                                 .attr("y", textRadius * Math.sin(textAngle - Math.PI / 2))
                                 .attr("dy", "0.35em")
@@ -342,7 +350,7 @@ class Nightingale_Rose_Chart{
                         }
                     });
                 });
-        }
+            }
     }
 
     renderEventCircles(month, date, category) {
@@ -350,13 +358,23 @@ class Nightingale_Rose_Chart{
         vis.innerMark.selectAll("circle").remove(); // Clear existing circles
     
         const events = vis.originalData.filter(data => data.month === month && data.date === date && data.category === category);
+        console.log(events);
         const packingInnerRadius = vis.innerRadius * 0.7;
         // Prepare the data for the circle packing layout
         const data = {
             name: "root",
             children: events.map((event, i) => ({
                 name: event.event_name,
-                value: 1 // Uniform size
+                value: 1, // Uniform size
+                eventData: {
+                    month: event.month,
+                    date: event.date,
+                    category: event.category,
+                    venue_name: event.venue_name,
+                    event_name: event.event_name,
+                    date_time: event.date_time,
+                    coordinates: event.coordinates,
+                } // Store all the necessary event data
             }))
         };
     
@@ -375,9 +393,14 @@ class Nightingale_Rose_Chart{
             .join("circle")
             .attr("cx", d => d.x - packingInnerRadius + 10) // Adjust for the center and smaller radius
             .attr("cy", d => d.y - packingInnerRadius + 10)
-            .attr("r", d => d.r)
+            .attr("r", 0) 
             .attr("fill", vis.color(category))
             .attr("fill-opacity", 0.8)
+            .transition()
+            .duration(500)
+            .attr("r", d => d.r)
+        
+        vis.innerMark.selectAll("circle")
             .on("mouseover", (event, d) => {
                 let tooltip = d3.select("body").select(".tooltip");
                 tooltip.style("visibility", "visible")
@@ -393,6 +416,10 @@ class Nightingale_Rose_Chart{
             .on("mouseout", () => {
                 let tooltip = d3.select("body").select(".tooltip");
                 tooltip.style("visibility", "hidden");
+            })
+            .on("click", function(event, d) {
+                const individualEvent = new CustomEvent("roseChartEventClick", { detail: d.data.eventData });
+                window.dispatchEvent(individualEvent);
             });
     }
     

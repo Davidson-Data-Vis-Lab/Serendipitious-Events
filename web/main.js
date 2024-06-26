@@ -1,4 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
+	Split(['#chart', '#map'], {
+        sizes: [65, 35], // Initial sizes in percentages
+        minSize: [300, 300], // Minimum size in pixels for each pane
+        gutterSize: 4, // Width of the draggable gutter in pixels
+    });
+
 	let rose_chart, map;
 
 	async function fetchData() {

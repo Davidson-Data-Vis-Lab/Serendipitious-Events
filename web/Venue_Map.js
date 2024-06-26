@@ -346,7 +346,7 @@ class Venue_Map {
 
 		const marker = L.marker([lat, lon], { icon })
 			.bindPopup(
-				`<b>${eventData.venue_name}</b><br>${eventData.event_name}<br>${eventData.date_time}`
+				`<b>${eventData.event_name}</b><br>${eventData.date_time}<br>${eventData.venue_name}`
 			)
 			.addTo(this.individualLayer)
 			.openPopup();
@@ -364,7 +364,7 @@ class Venue_Map {
 
 		const marker = L.marker([offsetLat, offsetLon], { icon })
 			.bindPopup(
-				`<b>${eventData.venue_name}</b><br>${eventData.event_name}<br>${eventData.date_time}`
+				`<b>${eventData.event_name}</b><br>${eventData.date_time}<br>${eventData.venue_name}`
 			)
 			.addTo(this.markersLayer);
 	}

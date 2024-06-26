@@ -1,3 +1,4 @@
+/* CSS file for calender*/
 .arc text {
 	font: 10px sans-serif;
 	text-anchor: middle;
@@ -12,23 +13,25 @@
 
 .color-key text {
 	font-weight: normal;
+	font: 10px sans-serif;
 }
 
 .color-key.selected text {
 	font-weight: bold;
 }
 
-.fetchDataButton {
-	background-color: #4c64dc;
-	border: none;
-	color: white;
-	padding: 10px 24px;
-	border-radius: 8px;
-	text-align: center;
-	font-size: 16px;
-	margin: 5px;
-	opacity: 1;
-	cursor: pointer;
+.date-circle {
+    fill: #FFF;
+}
+
+.date-circle:hover {
+    cursor: pointer;
+}
+
+/* Add class for the selected (clicked) circle */
+.selected-circle {
+    stroke: red;
+    stroke-width: 2px;
 }
 
 #tooltip{
@@ -44,35 +47,59 @@
     transform: translate(-50%, -50%);
 }
 
-#visualizations {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    width: 100%;
-    height: 100vh;
-    padding: 10px;
-    box-sizing: border-box;
-}
-
-.viz {
-    width: 48%;
-    height: 100%;
-}
-
 #chart {
-	flex: 0 0 65%; /* 65% width */
+    height: 100%;
     border: 1px solid #ccc;
     background-color: #f9f9f9;
 }
 
-#map {
-	flex: 0 0 35%; /* 35% width */
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
+.month-key text {
+    font: 10px sans-serif; /* Adjust font size as needed */
 }
 
 .month-key:hover {
     cursor: pointer;
+}
+
+/* Main Page */
+.fetchDataButton {
+	background-color: #4c64dc;
+	border: none;
+	color: white;
+	padding: 10px 24px;
+	border-radius: 8px;
+	text-align: center;
+	font-size: 16px;
+	margin: 5px;
+	opacity: 1;
+	cursor: pointer;
+}
+
+#visualizations {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    box-sizing: border-box;
+}
+
+.viz {
+    height: 100%;
+}
+
+.gutter {
+    background-color: #ddd; /* Color of the draggable gutter */
+    background-repeat: no-repeat;
+    background-position: 50%;
+}
+
+.gutter.gutter-horizontal {
+    cursor: col-resize;
+}
+
+/* CSS file for Map*/
+#map {
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
 }
 
 .legend {
