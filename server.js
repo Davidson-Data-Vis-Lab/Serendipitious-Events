@@ -43,7 +43,7 @@ app.get('/rose_chart', (req, res) => {
     // GROUP BY MONTH(e.date_time), e.category
     // ORDER BY month, e.category;`;
 
-    let baseQuery = `SELECT MONTH(e.date_time) AS month,e.name AS event_name,e.date_time,e.category,v.name AS venue_name,v.borough,v.coordinates 
+    let baseQuery = `SELECT MONTH(e.date_time) AS month, DAYOFMONTH(e.date_time) AS date, e.name AS event_name,e.date_time,e.category,v.name AS venue_name,v.borough,v.coordinates 
     FROM Event e
     JOIN Venue v ON e.venue_id = v.id
     WHERE (v.coordinates < '0'OR v.coordinates > '0') AND e.date_time BETWEEN '2019-01-01' AND '2019-12-31'
