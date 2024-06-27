@@ -95,4 +95,13 @@ document.addEventListener("DOMContentLoaded", function () {
 			});
 		}
 	});
+
+	window.addEventListener("venueMapEventClick", (event) => {
+        const eventData = event.detail;
+        console.log("Venue map event clicked: ", eventData);
+
+        if (rose_chart) {
+            rose_chart.highlightEvent(eventData);
+        }
+    });
 });

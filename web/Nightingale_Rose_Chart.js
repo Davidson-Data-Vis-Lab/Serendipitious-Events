@@ -203,7 +203,7 @@ class Nightingale_Rose_Chart{
             .data(vis.color.domain())
             .join("g")
             .attr("class", "color-key")
-            .attr("transform", (d, i, nodes) => `translate(${vis.width / 2}, ${-vis.height / 2 + 20 + i * 20})`)
+            .attr("transform", (d, i, nodes) => `translate(${-vis.width + 120}, ${-vis.height / 2 + 20 + i * 20})`)
             .call(g => g.append("rect")
             .attr("width", 18)
             .attr("height", 18)
@@ -274,6 +274,10 @@ class Nightingale_Rose_Chart{
                     .join("g")
                     .attr("class", "circles-group");
                 
+                const categoryData = vis.originalData.filter(d => d.category === vis.selectedCategory);
+                const minEventCount = 0;
+                const maxEventCount = d3.max(categoryData, d => categoryData.filter(data => data.month === d.month && data.date === d.date).length);
+
                 vis.data.forEach(d => {
                     d.forEach(e => {
                         console.log("e is ", e);
@@ -302,12 +306,15 @@ class Nightingale_Rose_Chart{
                                 const date = i + 1;
                                 
                                 const count = vis.originalData.filter(data => data.month === e.data.month && data.date === date && data.category === vis.selectedCategory).length;
+                                const colorScale = d3.scaleSequential(d3.interpolateGreys).domain([minEventCount, maxEventCount]);
+
                                 circlesGroup.append("circle")
                                     .datum({ month: e.data.month, date: date, count: count })
                                     .attr("class", "date-circle")
                                     .attr("cx", radius * Math.cos(angle - Math.PI / 2))
                                     .attr("cy", radius * Math.sin(angle - Math.PI / 2))
                                     .attr("r", 0)  // Start with radius 0
+                                    .attr("fill", colorScale(count))
                                     .attr("fill-opacity", 0.8)
                                     .transition()
                                     .delay(600)  // Delay for 1 second
@@ -330,11 +337,11 @@ class Nightingale_Rose_Chart{
                                     tooltip.style("visibility", "hidden");
                                 })
                                 .on("click", function(event, d) {
-                                    d3.selectAll(".date-circle").classed("selected-circle", false);
-                                    d3.select(this).classed("selected-circle", true);
+                                    d3.selectAll(".date-circle").classed("selected-circle clicked", false); // Remove both classes
+                                    d3.select(this).classed("selected-circle clicked", true); // Add both classes
                                     vis.renderEventCircles(d.month, d.date, vis.selectedCategory);
                                     event.stopPropagation();
-                                });
+                                });                                
                         }
 
                             // Add count text on top of each arc
@@ -353,19 +360,18 @@ class Nightingale_Rose_Chart{
             }
     }
 
-    renderEventCircles(month, date, category) {
+    renderEventCircles(month, date, category, name = null) {
         let vis = this;
         vis.innerMark.selectAll("circle").remove(); // Clear existing circles
     
         const events = vis.originalData.filter(data => data.month === month && data.date === date && data.category === category);
-        console.log(events);
         const packingInnerRadius = vis.innerRadius * 0.7;
         // Prepare the data for the circle packing layout
         const data = {
             name: "root",
-            children: events.map((event, i) => ({
+            children: events.map((event) => ({
                 name: event.event_name,
-                value: 1, // Uniform size
+                value: 1,
                 eventData: {
                     month: event.month,
                     date: event.date,
@@ -391,20 +397,23 @@ class Nightingale_Rose_Chart{
         vis.innerMark.selectAll("circle")
             .data(nodes)
             .join("circle")
+            .attr("class", "event-circle")
             .attr("cx", d => d.x - packingInnerRadius + 10) // Adjust for the center and smaller radius
             .attr("cy", d => d.y - packingInnerRadius + 10)
             .attr("r", 0) 
             .attr("fill", vis.color(category))
-            .attr("fill-opacity", 0.8)
+            .attr("fill-opacity", 0.5)  // Default opacity
             .transition()
             .duration(500)
-            .attr("r", d => d.r)
-        
+            .attr("r", d => d.r);
+    
         vis.innerMark.selectAll("circle")
-            .on("mouseover", (event, d) => {
+            .on("mouseover", function(event, d) {
+                d3.select(this)
+                    .attr("fill-opacity", 0.8);  // Increase opacity on hover
                 let tooltip = d3.select("body").select(".tooltip");
                 tooltip.style("visibility", "visible")
-                    .text(d.data.name) // Display event name
+                    .html(`${d.data.eventData.event_name}<br>${d.data.eventData.date_time}<br> ${d.data.eventData.venue_name}`) // Display event details // Display event name
                     .style("top", (event.pageY - 10) + "px")
                     .style("left", (event.pageX + 10) + "px");
             })
@@ -413,15 +422,75 @@ class Nightingale_Rose_Chart{
                 tooltip.style("top", (event.pageY - 10) + "px")
                     .style("left", (event.pageX + 10) + "px");
             })
-            .on("mouseout", () => {
+            .on("mouseout", function() {
+                if (!d3.select(this).classed("clicked")) {
+                    d3.select(this).attr("fill-opacity", 0.5);  // Reset opacity on mouseout if not clicked
+                }
                 let tooltip = d3.select("body").select(".tooltip");
                 tooltip.style("visibility", "hidden");
             })
             .on("click", function(event, d) {
+                d3.selectAll(".event-circle")
+                    .attr("stroke", "none")
+                    .attr("fill-opacity", 0.5)
+                    .classed("clicked", false);  // Reset stroke and opacity for all circles
+    
+                d3.select(this)
+                    .attr("stroke", "red")
+                    .attr("stroke-width", 2)
+                    .attr("fill-opacity", 0.8)  // Set stroke and opacity for clicked circle
+                    .classed("clicked", true);
+    
                 const individualEvent = new CustomEvent("roseChartEventClick", { detail: d.data.eventData });
                 window.dispatchEvent(individualEvent);
             });
+    
+        if (name) {
+            // If name is provided, treat the corresponding event as clicked
+            vis.innerMark.selectAll("circle")
+                .filter(d => d.data.eventData.event_name === name)
+                .classed("clicked", true)
+                .attr("stroke", "red")
+                .attr("stroke-width", 2)
+                .attr("fill-opacity", 0.8);
+        }
     }
     
 
+    highlightEvent(eventData) {
+        const vis = this;
+    
+        const highlight = () => {
+            const circles = d3.selectAll(".date-circle");
+            circles.classed("selected-circle clicked", false); // Remove both classes
+    
+            const matchingCircle = circles.filter(d => {
+                return (
+                    d.month === new Date(eventData.date_time).getMonth() + 1 &&
+                    d.date === new Date(eventData.date_time).getDate() &&
+                    d.category === eventData.category
+                );
+            });
+    
+            matchingCircle.classed("selected-circle clicked", true); // Add both classes
+            matchingCircle.each(function() {
+                this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+    
+            vis.renderEventCircles(new Date(eventData.date_time).getMonth() + 1, new Date(eventData.date_time).getDate(), eventData.category, eventData.event_name);
+        };
+    
+        if (vis.selectedCategory !== eventData.category) {
+            vis.selectedCategory = eventData.category;
+    
+            vis.data = vis.originalData.filter(data => data.category === vis.selectedCategory);
+            vis.dataProcessed = false;
+            vis.updateVis();
+    
+            setTimeout(highlight, 1000); // Delay to ensure updateVis is completed
+        } else {
+            highlight();
+        }
+    }
+    
 }

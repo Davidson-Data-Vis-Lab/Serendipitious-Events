@@ -20,9 +20,6 @@
 	font-weight: bold;
 }
 
-.date-circle {
-    fill: #FFF;
-}
 
 .date-circle:hover {
     cursor: pointer;
@@ -60,6 +57,45 @@
 .month-key:hover {
     cursor: pointer;
 }
+
+.event-circle:hover{
+    cursor: pointer;
+}
+
+.selected-circle {
+    stroke: red;
+    stroke-width: 2px;
+    fill-opacity: 0.8;
+}
+
+/* Style for event circles */
+.event-circle {
+    fill-opacity: 0.5;
+    cursor: pointer;
+}
+
+.event-circle:hover {
+    fill-opacity: 0.8;
+}
+
+/* Style for clicked event circles */
+.clicked {
+    stroke: red;
+    stroke-width: 2px;
+    fill-opacity: 0.8;
+}
+
+/* Tooltip style */
+.tooltip {
+    position: absolute;
+    visibility: hidden;
+    background: #f9f9f9;
+    border: 1px solid #d3d3d3;
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+}
+
 
 /* Main Page */
 .fetchDataButton {

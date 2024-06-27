@@ -191,6 +191,11 @@ class Venue_Map {
 			marker.venueCoordinates = coordinates;
 			vis.animateMarker(marker, [lat, lon], [offsetLat, offsetLon]);	
 
+			marker.on('click', () => {
+				const eventDetail = new CustomEvent("venueMapEventClick", { detail: event });
+				window.dispatchEvent(eventDetail);
+			});
+
 			bounds.push([offsetLat, offsetLon]);
 		});
 
@@ -350,6 +355,11 @@ class Venue_Map {
 			)
 			.addTo(this.individualLayer)
 			.openPopup();
+		
+		marker.on('click', () => {
+			const eventDetail = new CustomEvent("venueMapEventClick", { detail: eventData });
+			window.dispatchEvent(eventDetail);
+		});
 	}
 
 	addVagueEventMarker(eventData) {
@@ -367,7 +377,12 @@ class Venue_Map {
 				`<b>${eventData.event_name}</b><br>${eventData.date_time}<br>${eventData.venue_name}`
 			)
 			.addTo(this.markersLayer);
-	}
+		
+		marker.on('click', () => {
+			const eventDetail = new CustomEvent("venueMapEventClick", { detail: eventData });
+			window.dispatchEvent(eventDetail);
+		});
+}
 
 
 }
