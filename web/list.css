@@ -1,0 +1,83 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.title {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.filters {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.filters label {
+    margin: 0 10px;
+}
+
+.filters select, .filters input {
+    margin: 0 10px;
+}
+
+.event-list {
+    list-style-type: none;
+    padding: 0;
+    width: 80%;
+}
+
+.event-item {
+    display: flex;
+    align-items: flex-start;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.event-date {
+    margin-top: 10px;
+    flex: 0 0 50px;
+    text-align: center;
+    font-size: 18px;
+    margin-right: 20px;
+}
+
+.event-date .day {
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.event-date .month {
+    text-transform: uppercase;
+    font-size: 14px;
+    color: gray;
+}
+
+.event-summary {
+    flex: 1;
+}
+
+.event-details {
+    display: none;
+    margin-top: 10px;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    background-color: #fff;
+}
+
+.event-details p {
+    margin: 5px 0;
+}
+
+.event-name {
+    font-weight: bold;
+    font-size: 18px;
+}
