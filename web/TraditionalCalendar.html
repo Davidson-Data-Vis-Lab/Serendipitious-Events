@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2019 NYC Event Calendar</title>
+    <link rel="stylesheet" href="TraditionalCalendar.css">
+</head>
+<body>
+    <h1>2019 NYC Event Calendar</h1>
+    <div id="controls">
+        <label for="month-select">Select Month: </label>
+        <select id="month-select">
+            <option value="1">January</option>
+            <option value="2">February</option>
+            <option value="3">March</option>
+            <option value="4">April</option>
+            <option value="5">May</option>
+            <option value="6">June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+        </select>
+        <div id="legend">
+            <div class="legend-item" data-category="Fitness">
+                <span class="legend-color" style="background-color: #4e79a7;"></span>Fitness
+            </div>
+            <div class="legend-item" data-category="Arts/Culture">
+                <span class="legend-color" style="background-color: #f28e2c;"></span>Arts/Culture
+            </div>
+            <div class="legend-item" data-category="Sport">
+                <span class="legend-color" style="background-color: #e15759;"></span>Sport
+            </div>
+            <div class="legend-item" data-category="Academics/Out of School Time">
+                <span class="legend-color" style="background-color: #76b7b2;"></span>Academics/Out of School Time
+            </div>
+            <div class="legend-item" data-category="Family Festival">
+                <span class="legend-color" style="background-color: #59a14f;"></span>Family Festival
+            </div>
+            <div class="legend-item" data-category="Mobile Unit">
+                <span class="legend-color" style="background-color: #edc949;"></span>Mobile Unit
+            </div>
+            <div class="legend-item" data-category="Performance">
+                <span class="legend-color" style="background-color: #af7aa1;"></span>Performance
+            </div>
+            <div class="legend-item" data-category="Nature">
+                <span class="legend-color" style="background-color: #ff9da7;"></span>Nature
+            </div>
+        </div>
+        <button id="choose-all">Choose All</button>
+    </div>
+
+    <div id="calendar"></div>
+
+    <script src="TraditionalCalendar.js"></script>
+</body>
+</html>
