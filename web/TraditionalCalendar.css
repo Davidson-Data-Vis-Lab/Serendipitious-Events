@@ -44,6 +44,14 @@ body {
     margin-top: 20px;
 }
 
+.weekday {
+    font-weight: bold;
+    text-align: center;
+    padding: 10px;
+    border-bottom: 2px solid #ccc;
+    background-color: #f0f0f0;
+}
+
 .day {
     border: 1px solid #ccc;
     padding: 10px;
@@ -66,6 +74,12 @@ body {
     cursor: pointer;
 }
 
+.event.selected {
+    border: 2px solid #333; /* Dark border to indicate selection */
+    background-color: #d0d0d0; /* Slightly different background color */
+    transition: border 0.3s, background-color 0.3s; /* Smooth transition for the effect */
+}
+
 .event-details {
     position: fixed;
     top: 50%;
@@ -73,16 +87,32 @@ body {
     transform: translate(-50%, -50%);
     background-color: white;
     padding: 20px;
+    padding-top: 30px;
+    padding-bottom: 0px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     z-index: 1000;
 }
-
 .event-details h2 {
     margin-top: 0;
 }
 
+.event:hover {
+    background-color: #d0d0d0; /* Slightly darker gray background on hover */
+    transform: scale(1.05); /* Slightly enlarge the event on hover */
+    transition: background-color 0.3s, transform 0.3s;
+}
+
 #close-btn {
-    margin-top: 10px;
-    padding: 5px 10px;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    font-size: 30px;
+    background: none;
+    border: none;
     cursor: pointer;
+    color: #333;
+}
+
+#close-btn:hover {
+    color: #ff0000;
 }

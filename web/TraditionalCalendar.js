@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 let isPopupOpen = false;
+let selectedEventDiv = null;
 
 async function fetchData() {
     try {
@@ -57,11 +58,24 @@ function renderCalendar(month, events) {
     const calendar = document.getElementById('calendar');
     calendar.innerHTML = '';
 
-    // Get selected categories
-    const selectedCategories = Array.from(document.querySelectorAll('.legend-item.selected')).map(item => item.dataset.category);
-    console.log(selectedCategories);
-    // Get days in the selected month
+    // Add headers for the weekdays
+    const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    weekdays.forEach(day => {
+        const weekdayDiv = document.createElement('div');
+        weekdayDiv.classList.add('weekday');
+        weekdayDiv.textContent = day;
+        calendar.appendChild(weekdayDiv);
+    });
+
+    // Get the first day of the month to determine the starting position
+    const firstDay = new Date(2019, month - 1, 1).getDay();
     const daysInMonth = new Date(2019, month, 0).getDate();
+
+    // Render empty cells for days before the first day of the month
+    for (let i = 0; i < firstDay; i++) {
+        const emptyCell = document.createElement('div');
+        calendar.appendChild(emptyCell);
+    }
 
     // Render each day
     for (let day = 1; day <= daysInMonth; day++) {
@@ -74,22 +88,23 @@ function renderCalendar(month, events) {
         dayDiv.appendChild(dateDiv);
 
         let dayEvents = [];
+        const selectedCategories = Array.from(document.querySelectorAll('.legend-item.selected')).map(item => item.dataset.category);
         if (selectedCategories.length > 0) {
             dayEvents = events.filter(event => event.month === month && event.date === day && selectedCategories.includes(event.category));
         }
-        
-        console.log(dayEvents);
+
         dayEvents.sort((a, b) => new Date(a.date_time) - new Date(b.date_time));
 
         dayEvents.forEach(event => {
             const eventDiv = document.createElement('div');
             eventDiv.classList.add('event');
-            eventDiv.textContent = event.event_name == null? "No Title" : event.event_name;
+            
+            const eventName = event.event_name == null ? '<i>No Title</i>' : event.event_name;
+            eventDiv.innerHTML = eventName; 
+            
             eventDiv.style.backgroundColor = getCategoryColor(event.category);
             eventDiv.addEventListener('click', () => {
-                if (!isPopupOpen) {
-                    showEventDetails(event);
-                }
+                showEventDetails(event,eventDiv);
             });
             dayDiv.appendChild(eventDiv);
         });
@@ -98,51 +113,79 @@ function renderCalendar(month, events) {
     }
 }
 
-function showEventDetails(event) {
+function showEventDetails(event, eventDiv) {
+    if (isPopupOpen) {
+        const currentlySelectedEventDiv = selectedEventDiv;
+        closeEventDetails();
+        if (currentlySelectedEventDiv === eventDiv) {
+            console.log("Same event clicked, closing details.");
+            return; // If the same event is clicked again, just close the details
+        }
+    }
+    console.log("Opening event details:", event);
     isPopupOpen = true;
+
+    selectedEventDiv = eventDiv;
+    eventDiv.classList.add('selected');
 
     const eventDetails = document.createElement('div');
     eventDetails.classList.add('event-details');
 
     const formattedTime = formatDateTime(event.date_time);
-
+    const eventName = event.event_name ? event.event_name : '<i>No Title</i>';
     const detailsHtml = `
-        <h2>${event.event_name}</h2>
-        <p><strong>Time:</strong> ${formattedTime}</p>
+        <button id="close-btn">&times;</button>
+        <h2>${eventName}</h2>
+        <p><strong>Date& Time:</strong> ${formattedTime}</p>
         <p><strong>Venue:</strong> ${event.venue_name}</p>
         <p><strong>Borough:</strong> ${event.borough}</p>
         <p><strong>Tags:</strong> ${event.tags}</p>
-        <button id="close-btn">Close</button>
     `;
     eventDetails.innerHTML = detailsHtml;
 
     document.body.appendChild(eventDetails);
 
-    document.getElementById('close-btn').addEventListener('click', () => {
+    document.getElementById('close-btn').addEventListener('click', closeEventDetails);
+    
+}
+
+function closeEventDetails() {
+    const eventDetails = document.querySelector('.event-details');
+    if (eventDetails) {
         document.body.removeChild(eventDetails);
         isPopupOpen = false;
-    });
+        if (selectedEventDiv) {
+            console.log("Removing selected class from:", selectedEventDiv);
+            selectedEventDiv.classList.remove('selected'); // Remove selected class from the event
+            selectedEventDiv = null;
+        }
+    }
 }
 
 function formatDateTime(dateTime) {
     const date = new Date(dateTime);
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
+    let hours = date.getHours();
     const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `${month}-${day} ${hours}:${minutes}`;
+    
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    const formattedTime = `${month}-${day} ${hours}:${minutes} ${ampm}`;
+    return formattedTime;
 }
 
 function getCategoryColor(category) {
     const categoryColors = {
-        "Fitness": "#4e79a7",
+        "Fitness": "#4e79a7c9",
         "Arts/Culture": "#f28e2c",
         "Sport": "#e15759",
         "Academics/Out of School Time": "#76b7b2",
-        "Family Festival": "#59a14f",
+        "Family Festival": "#ff9da7",
         "Mobile Unit": "#edc949",
-        "Performance": "#af7aa1",
-        "Nature": "#ff9da7"
+        "Performance": "#af7aa1bf",
+        "Nature": "#59a14fbd"
     };
     return categoryColors[category] || "#bab0ab"; // Default color if category not found
 }
