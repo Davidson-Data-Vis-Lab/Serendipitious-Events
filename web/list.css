@@ -29,7 +29,7 @@ body {
 .event-list {
     list-style-type: none;
     padding: 0;
-    width: 80%;
+    width: 50%;
 }
 
 .event-item {

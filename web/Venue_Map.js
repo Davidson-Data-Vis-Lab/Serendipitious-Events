@@ -65,6 +65,7 @@ class Venue_Map {
         vis.individualLayer = L.layerGroup().addTo(vis.map);
 		vis.addLegend();
         vis.addResetZoomButton();
+		vis.addTrashButton();
 	}
 
 	addLegend() {
@@ -79,14 +80,14 @@ class Venue_Map {
             icon.src = './assets/Legend.svg'; // Path to your SVG icon
 
             legendDiv.innerHTML = `
-                <div><img src="./assets/Fitness.svg" alt="Fitness"> Fitness</div>
-                <div><img src="./assets/Family_Festival.svg" alt="Family Festival"> Family Festival</div>
-                <div><img src="./assets/Sport.svg" alt="Sport"> Sport</div>
-                <div><img src="./assets/Academics.svg" alt="Academics/Out of School Time"> Academics/Out of School Time</div>
-                <div><img src="./assets/Arts_Culture.svg" alt="Arts/Culture"> Arts/Culture</div>
-                <div><img src="./assets/Mobile_unit.svg" alt="Mobile Unit"> Mobile Unit</div>
-                <div><img src="./assets/Performance.svg" alt="Performance"> Performance</div>
-                <div><img src="./assets/Nature.svg" alt="Nature"> Nature</div>
+                <div class="legend-item" data-category="Fitness"><img src="./assets/Fitness.svg" alt="Fitness"> Fitness</div>
+				<div class="legend-item" data-category="FamilyFestival"><img src="./assets/Family_Festival.svg" alt="Family Festival"> Family Festival</div>
+				<div class="legend-item" data-category="Sport"><img src="./assets/Sport.svg" alt="Sport"> Sport</div>
+				<div class="legend-item" data-category="AcademicsOutofSchoolTime"><img src="./assets/Academics.svg" alt="Academics/Out of School Time"> Academics/Out of School Time</div>
+				<div class="legend-item" data-category="ArtsCulture"><img src="./assets/Arts_Culture.svg" alt="Arts/Culture"> Arts/Culture</div>
+				<div class="legend-item" data-category="MobileUnit"><img src="./assets/Mobile_unit.svg" alt="Mobile Unit"> Mobile Unit</div>
+				<div class="legend-item" data-category="Performance"><img src="./assets/Performance.svg" alt="Performance"> Performance</div>
+				<div class="legend-item" data-category="Nature"><img src="./assets/Nature.svg" alt="Nature"> Nature</div>
             `;
 
             toggle.addEventListener('click', () => {
@@ -94,11 +95,29 @@ class Venue_Map {
                 legendDiv.style.display = isVisible ? 'none' : 'block';
             });
 
+			container.querySelectorAll('.legend-item').forEach(item => {
+				item.addEventListener('click', () => {
+					const category = item.getAttribute('data-category');
+					this.showCategoryEvents(category);
+				});
+			});
+
             return container;
         };
 
         legend.addTo(this.map);
     }
+
+	showCategoryEvents(category) {
+		this.cleanMarkersLayers();
+		this.cleanIndividualLayer();
+
+		const events = this.eventData.filter(event => event.category.replace(/ /g, "").replace(/\//g, "") === category);
+	
+		events.forEach(event => {
+			this.addVagueEventMarker(event);
+		});
+	}
 
 	addResetZoomButton() {
         const resetZoomContainer = L.control({ position: 'topleft' });
@@ -115,6 +134,24 @@ class Venue_Map {
         };
 
         resetZoomContainer.addTo(this.map);
+    }
+
+	addTrashButton() {
+        const TrashContainer = L.control({ position: 'topleft' });
+
+        TrashContainer.onAdd = () => {
+            const button = L.DomUtil.create('div', 'trash-container');
+            const icon = L.DomUtil.create('img', '', button);
+            icon.src = './assets/Trashbin.svg'; // Path to your SVG icon
+            icon.alt = 'Remove All';
+            button.addEventListener('click', () => {
+                this.cleanMarkersLayers();
+				this.cleanIndividualLayer();
+            });
+            return button;
+        };
+
+        TrashContainer.addTo(this.map);
     }
 
 	updateVis() {
@@ -344,7 +381,6 @@ class Venue_Map {
 	addPreciseEventMarker(eventData) {
         this.cleanMarkersLayers();
 
-		console.log("event data is: ", eventData.category);
 		const icon =
 			this.icons[eventData.category.replace(/ /g, "").replace(/\//g, "")];
 		const [lat, lon] = eventData.coordinates.split(",").map(Number);
@@ -356,9 +392,14 @@ class Venue_Map {
 			.addTo(this.individualLayer)
 			.openPopup();
 		
+		this.map.setView([lat, lon], this.map.getZoom());
+
 		marker.on('click', () => {
 			const eventDetail = new CustomEvent("venueMapEventClick", { detail: eventData });
 			window.dispatchEvent(eventDetail);
+
+			const selectCategoryEvent = new CustomEvent("selectCategory", { detail: eventData.category });
+        	window.dispatchEvent(selectCategoryEvent);
 		});
 	}
 
@@ -381,6 +422,9 @@ class Venue_Map {
 		marker.on('click', () => {
 			const eventDetail = new CustomEvent("venueMapEventClick", { detail: eventData });
 			window.dispatchEvent(eventDetail);
+
+			const selectCategoryEvent = new CustomEvent("selectCategory", { detail: eventData.category });
+        	window.dispatchEvent(selectCategoryEvent);
 		});
 }
 

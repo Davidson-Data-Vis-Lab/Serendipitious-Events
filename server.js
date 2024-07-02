@@ -31,23 +31,35 @@ app.listen(port, () => {
 });
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'web', 'index.html'));
+    res.sendFile(path.join(__dirname, 'web', 'SerendipitousVis.html'));
 });
 
 
 app.get('/rose_chart', (req, res) => {
-	// let baseQuery = `SELECT MONTH(e.date_time) AS month, e.category,COUNT(*) AS event_count
-    // FROM Event e
-    // WHERE YEAR(e.date_time) = 2019
-    // AND 
-    // GROUP BY MONTH(e.date_time), e.category
-    // ORDER BY month, e.category;`;
 
-    let baseQuery = `SELECT MONTH(e.date_time) AS month, DAYOFMONTH(e.date_time) AS date, e.name AS event_name,e.date_time,e.category,v.name AS venue_name,v.borough,v.coordinates 
-    FROM Event e
-    JOIN Venue v ON e.venue_id = v.id
-    WHERE (v.coordinates < '0'OR v.coordinates > '0') AND e.date_time BETWEEN '2019-01-01' AND '2019-12-31'
-    ORDER BY e.date_time;`;
+    let baseQuery = `SELECT 
+    MONTH(e.date_time) AS month, 
+    DAYOFMONTH(e.date_time) AS date, 
+    e.name AS event_name,
+    e.date_time,
+    e.category,
+    v.name AS venue_name,
+    v.borough,
+    v.coordinates, 
+    GROUP_CONCAT(ea.tag ORDER BY ea.tag SEPARATOR ', ') AS tags
+    FROM 
+        Event e
+    JOIN 
+        Venue v ON e.venue_id = v.id
+    JOIN 
+        Event_Audience ea ON ea.event_id = e.id
+    WHERE 
+        (v.coordinates < '0' OR v.coordinates > '0') 
+        AND e.date_time BETWEEN '2019-01-01' AND '2019-12-31'
+    GROUP BY 
+        e.id, e.date_time, e.name, e.category, v.name, v.borough, v.coordinates
+    ORDER BY 
+        e.date_time;`;
 	
     db.query(baseQuery,(error, results) => {
         if (error) {
@@ -57,21 +69,3 @@ app.get('/rose_chart', (req, res) => {
         res.json(results);
     });
 });
-
-
-app.get('/venue_map'),(req,res) => {
-    let baseQuery = `SELECT v.name, COUNT(*), MAX(v.coordinates) AS events_number FROM Event e
-        JOIN Venue v on e.venue_id = v.id 
-        WHERE (v.coordinates < '0'OR v.coordinates > '0')
-        GROUP BY v.name
-        ORDER BY v.name;`;
-    
-    db.query(baseQuery,(error, results) => {
-        if (error) {
-            res.status(500).send('Internal Server Error');
-            return;
-        }
-        res.json(results);
-    });
-
-}

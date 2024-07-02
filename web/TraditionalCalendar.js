@@ -178,14 +178,14 @@ function formatDateTime(dateTime) {
 
 function getCategoryColor(category) {
     const categoryColors = {
-        "Fitness": "#4e79a7c9",
+        "Fitness": "#7C98C0",
         "Arts/Culture": "#f28e2c",
         "Sport": "#e15759",
         "Academics/Out of School Time": "#76b7b2",
         "Family Festival": "#ff9da7",
         "Mobile Unit": "#edc949",
-        "Performance": "#af7aa1bf",
-        "Nature": "#59a14fbd"
+        "Performance": "#af7aa1",
+        "Nature": "#5DAB54"
     };
     return categoryColors[category] || "#bab0ab"; // Default color if category not found
 }

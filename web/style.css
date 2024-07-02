@@ -9,6 +9,7 @@
 
 .color-key {
 	cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .color-key text {
@@ -20,6 +21,10 @@
 	font-weight: bold;
 }
 
+.color-key:hover {
+    background-color: #b7b5b5; /* Light grey background */
+    text-decoration: underline;
+}
 
 .date-circle:hover {
     cursor: pointer;
@@ -28,7 +33,12 @@
 /* Add class for the selected (clicked) circle */
 .selected-circle {
     stroke: red;
-    stroke-width: 2px;
+    stroke-width: 3px;
+}
+ 
+.blue{
+    stroke: blue;
+    stroke-width: 3px;
 }
 
 #tooltip{
@@ -49,24 +59,23 @@
     border: 1px solid #ccc;
     background-color: #f9f9f9;
 }
+.month-key{
+    cursor: pointer;
+}
 
 .month-key text {
     font: 10px sans-serif; /* Adjust font size as needed */
 }
 
-.month-key:hover {
-    cursor: pointer;
+.month-key:hover{
+    font-weight: bold;
+    text-decoration: underline;
 }
 
 .event-circle:hover{
     cursor: pointer;
 }
 
-.selected-circle {
-    stroke: red;
-    stroke-width: 2px;
-    fill-opacity: 0.8;
-}
 
 /* Style for event circles */
 .event-circle {
@@ -190,6 +199,22 @@
     align-items: flex-start;
 }
 
+.legend-item {
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.legend-item:hover {
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    color: #333;
+}
+
+.legend-item:active {
+    background-color: #ccc;
+    color: #000;
+}
+
 .reset-zoom{
     position: relative;
     background-color: rgba(255, 255, 255);
@@ -203,6 +228,23 @@
 }
 
 .reset-zoom img {
+    width: 26px;
+    height: 26px;
+}
+
+.trash-container{
+    position: relative;
+    background-color: rgba(255, 255, 255);
+    padding: 4px;
+    border-radius: 5px;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.trash-container img {
     width: 26px;
     height: 26px;
 }

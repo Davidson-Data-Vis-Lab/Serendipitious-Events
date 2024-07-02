@@ -23,10 +23,6 @@ document.addEventListener("DOMContentLoaded", function () {
 	}
 
 	function UpdateChart(inputData) {
-		if (rose_chart) {
-			d3.select(rose_chart._config.parentElement).selectAll("*").remove();
-		}
-		// Initialize and render the new chart
 		rose_chart = new Nightingale_Rose_Chart(
 			{ parentElement: "#chart" },
 			inputData
@@ -35,43 +31,63 @@ document.addEventListener("DOMContentLoaded", function () {
 	}
 
 	function UpdateVenueMap(inputData) {
+		map = new Venue_Map({ parentElement: "#map" }, inputData);
+		map.updateVis();
+	}
+
+	function formatDateTime(dateTime) {
+		const date = new Date(dateTime);
+		const month = String(date.getMonth() + 1).padStart(2, '0');
+		const day = String(date.getDate()).padStart(2, '0');
+		let hours = date.getHours();
+		const minutes = String(date.getMinutes()).padStart(2, '0');
+		
+		const ampm = hours >= 12 ? 'PM' : 'AM';
+		hours = hours % 12;
+		hours = hours ? hours : 12; // the hour '0' should be '12'
+		const formattedTime = `${month}-${day} ${hours}:${minutes} ${ampm}`;
+		return formattedTime;
+	}
+
+	document.getElementById("fetchRoseButton").addEventListener("click", () => {
+		if (rose_chart) {
+			// Remove the rose chart if it exists
+			const parentElement = d3.select(rose_chart._config.parentElement);
+			if (parentElement) {
+				parentElement.selectAll("*").remove(); // Remove all child elements
+			}
+			rose_chart = null;
+			document.getElementById("fetchRoseButton").innerText = "Display Year Calendar";
+		} else {
+			// Fetch data and display the rose chart
+			fetchData().then(data => {
+				data.forEach(event => {
+					event.date_time = formatDateTime(event.date_time);
+				});
+				UpdateChart(data);
+			});
+			document.getElementById("fetchRoseButton").innerText = "Remove Year Calendar";
+		}
+	});
+
+	document.getElementById("fetchMapButton").addEventListener("click", () => {
 		if (map) {
 			const parentElement = document.querySelector(map._config.parentElement);
 			if (parentElement) {
 				const newElement = parentElement.cloneNode(false); // Clone without children
 				parentElement.parentNode.replaceChild(newElement, parentElement);
 			}
+			map = null; 
+			document.getElementById("fetchMapButton").innerText = "Display Event Map";
+		} else {
+			fetchData().then(data => {
+				data.forEach(event => {
+					event.date_time = formatDateTime(event.date_time);
+				});
+				UpdateVenueMap(data);
+			});
+			document.getElementById("fetchMapButton").innerText = "Remove Event Map";
 		}
-		map = new Venue_Map({ parentElement: "#map" }, inputData);
-		map.updateVis();
-	}
-
-	function formatDateTime(dateTimeString) {
-		const date = new Date(dateTimeString);
-		const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
-		const day = String(date.getDate()).padStart(2, "0");
-		const hours = String(date.getHours()).padStart(2, "0");
-		const minutes = String(date.getMinutes()).padStart(2, "0");
-
-		return `${month}-${day} ${hours}:${minutes}`;
-	}
-
-	document.getElementById("fetchRoseButton").addEventListener("click", () => {
-		fetchData().then(data => {
-            data.forEach(event => {
-                event.date_time = formatDateTime(event.date_time);
-            });
-            UpdateChart(data);
-        });
-    });
-
-	document.getElementById("fetchMapButton").addEventListener("click", () => {
-        fetchData().then(data => {
-            data.forEach(event => {
-                event.date_time = formatDateTime(event.date_time);
-            });
-			UpdateVenueMap(data);
-        });
 	});
 
 	window.addEventListener("roseChartEventClick", (event) => {
@@ -104,4 +120,17 @@ document.addEventListener("DOMContentLoaded", function () {
             rose_chart.highlightEvent(eventData);
         }
     });
+
+	window.addEventListener("resetZoom", () => {
+        if (map) {
+            map.map.setZoom(map.defaultZoom);
+        }
+    });
+
+	window.addEventListener("resetLocZoom", () => {
+        if (map) {
+            map.map.setView(map.defaultView,map.defaultZoom);
+        }
+    });
+
 });
