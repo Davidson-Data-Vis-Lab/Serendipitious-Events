@@ -9,11 +9,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	async function fetchData() {
 		try {
-			const response = await fetch("http://localhost:3000/rose_chart");
+			const response = await fetch("../data.json");
 			if (!response.ok) {
 				throw new Error("Network response was not ok");
 			}
-			return await response.json();
+			const result = await response.json();
+        	return result.data;
 		} catch (error) {
 			console.error(
 				"There has been a problem with your rose chart operation:",
