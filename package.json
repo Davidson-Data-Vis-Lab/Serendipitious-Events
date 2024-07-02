@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.19.2",
-    "mysql2": "^3.10.1"
+    "mysql2": "^3.10.1",
+    "nouislider": "^15.8.1"
   }
 }

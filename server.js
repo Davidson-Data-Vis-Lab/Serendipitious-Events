@@ -31,7 +31,7 @@ app.listen(port, () => {
 });
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'web', 'SerendipitousVis.html'));
+    res.sendFile(path.join(__dirname, 'web', 'MagicPotion.html'));
 });
 
 
