@@ -1,119 +1,225 @@
 document.addEventListener("DOMContentLoaded", function () {
-	Split(['#chart', '#map'], {
-        sizes: [65, 35], // Initial sizes in percentages
+    let splitInstance, isMagicPotionVisible = false;
+
+    Split(['#chart', '#map-magic-container'], {
+        sizes: [61.8, 38.2], // Golden ratio sizes in percentages
         minSize: [300, 300], // Minimum size in pixels for each pane
         gutterSize: 4, // Width of the draggable gutter in pixels
+        direction: 'horizontal' // Split direction
     });
 
-	let rose_chart, map;
+    let rose_chart, map, magicPotion;
 
-	async function fetchData() {
-		try {
-			const response = await fetch("data.json");
-			if (!response.ok) {
-				throw new Error("Network response was not ok");
-			}
-			const result = await response.json();
-			return result.data;
-		} catch (error) {
-			console.error(
-				"There has been a problem with your rose chart operation:",
-				error
-			);
-		}
-	}
+    async function fetchData() {
+        try {
+            const response = await fetch("data.json");
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            const result = await response.json();
+            return result.data;
+        } catch (error) {
+            console.error(
+                "There has been a problem with your fetch operation:",
+                error
+            );
+        }
+    }
 
-	function UpdateChart(inputData) {
-		rose_chart = new Nightingale_Rose_Chart(
-			{ parentElement: "#chart" },
-			inputData
-		);
-		rose_chart.updateVis();
-	}
+    function UpdateChart(inputData) {
+        rose_chart = new Nightingale_Rose_Chart(
+            { parentElement: "#chart" },
+            inputData
+        );
+        rose_chart.updateVis();
+    }
 
-	function UpdateVenueMap(inputData) {
-		map = new Venue_Map({ parentElement: "#map" }, inputData);
-		map.updateVis();
-	}
+    function UpdateVenueMap(inputData) {
+        map = new Venue_Map({ parentElement: "#map" }, inputData);
+        map.updateVis();
+    }
 
-	function formatDateTime(dateTime) {
-		const date = new Date(dateTime);
-		const month = String(date.getMonth() + 1).padStart(2, '0');
-		const day = String(date.getDate()).padStart(2, '0');
-		let hours = date.getHours();
-		const minutes = String(date.getMinutes()).padStart(2, '0');
-		
-		const ampm = hours >= 12 ? 'PM' : 'AM';
-		hours = hours % 12;
-		hours = hours ? hours : 12; // the hour '0' should be '12'
-		const formattedTime = `${month}-${day} ${hours}:${minutes} ${ampm}`;
-		return formattedTime;
-	}
+    function initMagicPotion(inputData) {
+        const magicPotionContainer = document.getElementById("magicPotion");
+        magicPotionContainer.innerHTML = ''; // Clear any existing content
 
-	document.getElementById("fetchRoseButton").addEventListener("click", () => {
-		if (rose_chart) {
-			// Remove the rose chart if it exists
-			const parentElement = d3.select(rose_chart._config.parentElement);
-			if (parentElement) {
-				parentElement.selectAll("*").remove(); // Remove all child elements
-			}
-			rose_chart = null;
-			document.getElementById("fetchRoseButton").innerText = "Display Year Calendar";
-		} else {
-			// Fetch data and display the rose chart
-			fetchData().then(data => {
-				data.forEach(event => {
-					event.date_time = formatDateTime(event.date_time);
-				});
-				UpdateChart(data);
-			});
-			document.getElementById("fetchRoseButton").innerText = "Remove Year Calendar";
-		}
-	});
+        // Add HTML content dynamically
+        magicPotionContainer.innerHTML = `
+            <div class="container">
+                <div class="slider-container">
+                    <p>Handicap</p>
+                    <div id="slider1" class="slider-panel"></div>
+                </div>
+                <div class="slider-container">
+                    <p>Location</p>
+                    <div id="slider2" class="slider-panel"></div>
+                    <button id="toggleRandomLoc" class="toggle-button">Any location!</button>
+                </div>
+                <div class="slider-container">
+                    <p>Date</p>
+                    <div id="slider3" class="slider-panel"></div>
+                    <button id="toggleRandomDate" class="toggle-button">Any date!</button>
+                </div>
+                <div class="slider-container">
+                    <p>Age</p>
+                    <div id="slider4" class="slider-panel"></div>
+                    <img id="fetchRandomEventSVG" src="./assets/lottery.svg" alt="Lottery" width="45" height="45">
+                </div>
+                <div class="category-buttons-container">
+                    <button id="categoryFitness" class="category-button fitness">Fitness</button>
+                    <button id="categoryArts" class="category-button arts">Arts/Culture</button>
+                    <button id="categorySport" class="category-button sport">Sport</button>
+                    <button id="categoryAcademics" class="category-button academics">Academics</button>
+                    <button id="categoryFamily" class="category-button family">Family Festival</button>
+                    <button id="categoryMobile" class="category-button mobile">Mobile Unit</button>
+                    <button id="categoryPerformance" class="category-button performance">Performance</button>
+                </div>
+            </div>
 
-	document.getElementById("fetchMapButton").addEventListener("click", () => {
-		if (map) {
-			const parentElement = document.querySelector(map._config.parentElement);
-			if (parentElement) {
-				const newElement = parentElement.cloneNode(false); // Clone without children
-				parentElement.parentNode.replaceChild(newElement, parentElement);
-			}
-			map = null; 
-			document.getElementById("fetchMapButton").innerText = "Display Event Map";
-		} else {
-			fetchData().then(data => {
-				data.forEach(event => {
-					event.date_time = formatDateTime(event.date_time);
-				});
-				UpdateVenueMap(data);
-			});
-			document.getElementById("fetchMapButton").innerText = "Remove Event Map";
-		}
-	});
+            <div id="eventPanel" class="event-panel hidden">
+                <div class="event-panel-content">
+                    <span id="closePanel" class="close-button">&times;</span>
+                    <h2 id="eventName">Event Name</h2>
+                    <p id="eventTime">Event Time</p>
+                    <p id="eventVenue">Event Venue</p>
+                </div>
+            </div>
 
-	window.addEventListener("roseChartEventClick", (event) => {
-		const eventData = event.detail;
-		console.log("Event clicked: ", eventData);
+            <div id="graph-container">
+                <div id="event-bar-chart"></div>
+            </div>
+        `;
 
-		if (map) {
-			map.addPreciseEventMarker(eventData);
-		}
-	});
+        const coordinates = [40.747552523013795, -73.98654171064388];
+        const datetime = new Date('2019-01-31T10:00:00');
+        magicPotion = new MagicPotion({ parentElement: "#magicPotion" }, inputData, coordinates, datetime);
+        magicPotion.initVis(); // Call initVis to dynamically add content
+    }
 
-	window.addEventListener("roseChartMonthClick", (event) => {
-		const eventData = event.detail;
-		console.log("Month clicked: ", eventData);
+    function formatDateTime(dateTime) {
+        const date = new Date(dateTime);
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        let hours = date.getHours();
+        const minutes = String(date.getMinutes()).padStart(2, '0');
 
-		if (map) {
-			map.cleanMarkersLayers();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        const formattedTime = `${month}-${day} ${hours}:${minutes} ${ampm}`;
+        return formattedTime;
+    }
+
+    document.getElementById("fetchRoseButton").addEventListener("click", () => {
+        if (rose_chart) {
+            // Remove the rose chart if it exists
+            const parentElement = d3.select(rose_chart._config.parentElement);
+            if (parentElement) {
+                parentElement.selectAll("*").remove(); // Remove all child elements
+            }
+            rose_chart = null;
+            document.getElementById("fetchRoseButton").innerText = "Display Year Calendar";
+        } else {
+            // Fetch data and display the rose chart
+            fetchData().then(data => {
+                data.forEach(event => {
+                    event.date_time = formatDateTime(event.date_time);
+                });
+                UpdateChart(data);
+            });
+            document.getElementById("fetchRoseButton").innerText = "Remove Year Calendar";
+        }
+    });
+
+    document.getElementById("fetchMapButton").addEventListener("click", () => {
+        if (map) {
+            const parentElement = document.querySelector(map._config.parentElement);
+            if (parentElement) {
+                const newElement = parentElement.cloneNode(false); // Clone without children
+                parentElement.parentNode.replaceChild(newElement, parentElement);
+            }
+            map = null; 
+            document.getElementById("fetchMapButton").innerText = "Display Event Map";
+        } else {
+            fetchData().then(data => {
+                data.forEach(event => {
+                    event.date_time = formatDateTime(event.date_time);
+                });
+                UpdateVenueMap(data);
+            });
+            document.getElementById("fetchMapButton").innerText = "Remove Event Map";
+        }
+    });
+
+    document.getElementById("toggleMagicPotionButton").addEventListener("click", () => {
+        const magicPotionContainer = document.getElementById("magicPotion");
+        const mapContainer = document.getElementById("map");
+
+        if (isMagicPotionVisible) {
+            // Merge the divs
+            splitInstance.destroy();
+            magicPotionContainer.style.display = 'none';
+            mapContainer.style.flex = '1'; // Make map take full space
+            map.resize(); // Call the resize method
+            document.getElementById("toggleMagicPotionButton").innerText = "Display Magic Potion";
+        } else {
+            // Split the divs
+            fetchData().then(data => {
+                data.forEach(event => {
+                    event.date_time = formatDateTime(event.date_time);
+                });
+                initMagicPotion(data);
+                magicPotionContainer.style.display = "flex";
+                mapContainer.style.flex = 'none';
+                splitInstance = Split(['#map', '#magicPotion'], {
+                    sizes: [50, 50], 
+                    minSize: [300, 300],
+                    gutterSize: 4, 
+                    direction: 'vertical' 
+                });
+                map.resize(); 
+                document.getElementById("toggleMagicPotionButton").innerText = "Remove Magic Potion";
+            });
+        }
+        isMagicPotionVisible = !isMagicPotionVisible;
+    });
+
+    window.addEventListener("resize", () => {
+        if (rose_chart) {
+            rose_chart.updateVis();
+        }
+        if (map) {
+            map.updateVis();
+            map.resize(); // Call the resize method
+        }
+        if (magicPotion) {
+            magicPotion.updateVis();
+        }
+    });
+
+    window.addEventListener("roseChartEventClick", (event) => {
+        const eventData = event.detail;
+        console.log("Event clicked: ", eventData);
+
+        if (map) {
+            map.addPreciseEventMarker(eventData);
+        }
+    });
+
+    window.addEventListener("roseChartMonthClick", (event) => {
+        const eventData = event.detail;
+        console.log("Month clicked: ", eventData);
+
+        if (map) {
+            map.cleanMarkersLayers();
             map.cleanIndividualLayer();
-			eventData.forEach((event) => {
-				map.addVagueEventMarker(event);
-			});
-		}
-	});
+            eventData.forEach((event) => {
+                map.addVagueEventMarker(event);
+            });
+        }
+    });
 
-	window.addEventListener("venueMapEventClick", (event) => {
+    window.addEventListener("venueMapEventClick", (event) => {
         const eventData = event.detail;
         console.log("Venue map event clicked: ", eventData);
 
@@ -122,16 +228,29 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-	window.addEventListener("resetZoom", () => {
+    window.addEventListener("resetZoom", () => {
         if (map) {
             map.map.setZoom(map.defaultZoom);
         }
     });
 
-	window.addEventListener("resetLocZoom", () => {
+    window.addEventListener("resetLocZoom", () => {
         if (map) {
-            map.map.setView(map.defaultView,map.defaultZoom);
+            map.map.setView(map.defaultView, map.defaultZoom);
         }
     });
 
+	window.addEventListener("showEventDetail", (event) => {
+        const eventData = event.detail;
+        console.log("Show event detail: ", eventData);
+
+        // Highlight the event in the calendar and map
+        if (rose_chart) {
+            rose_chart.highlightEvent(eventData);
+        }
+        if (map) {
+            map.addPreciseEventMarker(eventData);
+        }
+    });
+	
 });

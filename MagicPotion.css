@@ -1,23 +1,151 @@
 .container {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    height: 100vh;
-    margin-top: 50px;
-  }
-  .slider-panel {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-left: 40px;
-    margin-right: 40px;
-    position: relative;
-    height: 200px;
-  }
-  #svg-panel {
-    width: 100%;
-    height: 300px;
-    margin-top: 50px;
-    border: 1px solid black;
-  }
-  
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  height: 100%; /* Adjusted to take full height */
+  margin-top: 5px;
+  flex-wrap: wrap; /* Allow wrapping if needed */
+}
+
+#graph-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 120px; /* Adjust height as needed */
+}
+
+.slider-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.slider-container p {
+  margin-bottom: 15px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.slider-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: 40px;
+  margin-right: 40px;
+  margin-bottom: 20px;
+  position: relative;
+  height: 150px;
+}
+
+.slider-panel h2 {
+  margin-bottom: 20px;
+  font-size: 18px;
+  text-align: center;
+}
+
+#svg-panel {
+  width: 100%;
+  height: 200px;
+  border: 1px solid black;
+}
+
+.toggle-button {
+  justify-content: center;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  box-shadow: 0 4px #999;
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.toggle-button.active {
+  background-color: #d4d4d4;
+  box-shadow: 0 2px #666;
+  transform: translateY(2px);
+}
+
+.category-buttons-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.category-button {
+  width: 100px; /* Set a fixed width */
+  height: 30px; /* Set a fixed height */
+  border-radius: 15px;
+  margin: 5px 0;
+  border: none;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 4px #999;
+  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.category-button.active {
+  box-shadow: 0 2px #666;
+  transform: translateY(2px);
+  filter: brightness(0.75);
+}
+
+#event-bar-chart rect {
+  stroke: black; /* Optional: add a border */
+  stroke-width: 1; /* Optional: border width */
+  transition: fill 0.2s ease;
+}
+
+.hidden {
+  display: none;
+}
+
+.event-panel {
+  position: absolute;
+  width: 300px;
+  padding: 20px;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  display: none; /* Initially hidden */
+  transform: translate(35%, 50%); /* Center the panel */
+}
+
+.event-panel-content {
+  position: relative;
+}
+
+.blur-background {
+  filter: blur(5px);
+  pointer-events: none; /* Prevent interaction with blurred content */
+}
+
+.close-button {
+  position: absolute;
+  top: -30px;
+  right: -5px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+#fetchRandomEventSVG {
+  cursor: pointer;
+  transition: transform 0.3s, fill 0.3s;
+}
+
+#fetchRandomEventSVG:hover {
+  transform: scale(1.1);
+}
+
+.category-button.fitness { background-color: #4e79a7; }
+.category-button.arts { background-color: #f28e2c; }
+.category-button.sport { background-color: #e15759; }
+.category-button.academics { background-color: #76b7b2; }
+.category-button.family { background-color: #59a14f; }
+.category-button.mobile { background-color: #edc949; }
+.category-button.performance { background-color: #af7aa1; }

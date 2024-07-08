@@ -55,10 +55,13 @@
 }
 
 #chart {
+    flex-basis: 61.8%; /* Golden ratio width */
     height: 100%;
     border: 1px solid #ccc;
     background-color: #f9f9f9;
 }
+
+
 .month-key{
     cursor: pointer;
 }
@@ -108,16 +111,16 @@
 
 /* Main Page */
 .fetchDataButton {
-	background-color: #4c64dc;
-	border: none;
-	color: white;
-	padding: 10px 24px;
-	border-radius: 8px;
-	text-align: center;
-	font-size: 16px;
-	margin: 5px;
-	opacity: 1;
-	cursor: pointer;
+    background-color: #4c64dc;
+    border: none;
+    color: white;
+    padding: 10px 24px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 16px;
+    margin: 5px;
+    opacity: 1;
+    cursor: pointer;
 }
 
 #visualizations {
@@ -128,11 +131,14 @@
 }
 
 .viz {
+    flex: 1;
     height: 100%;
+    width: 100%;
+    position: relative;
 }
 
 .gutter {
-    background-color: #ddd; /* Color of the draggable gutter */
+    background-color: #cbcaca; /* Color of the draggable gutter */
     background-repeat: no-repeat;
     background-position: 50%;
 }
@@ -141,10 +147,36 @@
     cursor: col-resize;
 }
 
+.gutter.gutter-vertical {
+    cursor: row-resize;
+}
+
+#map-magic-container {
+    flex-basis: 38.2%; /* Golden ratio width */
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
 /* CSS file for Map*/
+
 #map {
+    flex: 1;
     border: 1px solid #ccc;
     background-color: #f9f9f9;
+    width: 100%; /* Ensure map takes full width */
+}
+
+#magicPotion {
+    display: none; /* Initially hidden */
+    flex: 1;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    width: 100%; /* Ensure magicPotion takes full width when displayed */
 }
 
 .legend {
@@ -289,3 +321,6 @@
     overflow: hidden;
 }
 
+.hidden {
+    display: none;
+}

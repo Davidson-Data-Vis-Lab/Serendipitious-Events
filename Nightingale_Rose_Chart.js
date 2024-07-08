@@ -1,15 +1,15 @@
-class Nightingale_Rose_Chart{
+class Nightingale_Rose_Chart {
     /**
      * Class constructor with basic rose chart configuration
      * @param {*} _config 
      * @param {*} _data 
      */
-    constructor(_config,_data){
+    constructor(_config, _data) {
         this._config = {
             parentElement: _config.parentElement,
             containerWidth: _config.containerWidth || 600,
             containerHeight: _config.containerHeight || 800,
-            margin: _config.margin || {top: 10, right: 20, bottom: 10, left: 20}
+            margin: _config.margin || { top: 10, right: 20, bottom: 10, left: 20 }
         }
         this.originalData = _data; // Store the original data
         this.selectedCategory = null; // Track the selected category
@@ -19,9 +19,9 @@ class Nightingale_Rose_Chart{
     }
 
     /**
-     * This builds things that doesn't need any update.
+     * This builds things that don't need any update.
      */
-    initVis(){
+    initVis() {
         let vis = this;
 
         // SVG elements and constants
@@ -32,13 +32,13 @@ class Nightingale_Rose_Chart{
         vis.outerRadius = Math.min(vis.width, vis.height) / 1.5;
 
         vis.svg = d3.select(vis._config.parentElement)
-                    .append('svg')
-                    .attr("width", vis.width)
-                    .attr("height", vis.height)
-                    .attr("viewBox", [-vis.width / 2, -vis.height / 2, vis.width, vis.height])
-                    .attr("style", "width: 100%; height: 100% ; font: 12px sans-serif;");
-        
-        //Data needs to be initiated to fill color keys
+            .append('svg')
+            .attr("width", vis.width)
+            .attr("height", vis.height)
+            .attr("viewBox", [-vis.width / 2, -vis.height / 2, vis.width, vis.height])
+            .attr("style", "width: 100%; height: 100% ; font: 12px sans-serif;");
+
+        // Data needs to be initiated to fill color keys
         vis.processData();
 
         vis.monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -52,10 +52,10 @@ class Nightingale_Rose_Chart{
             .domain(vis.monthNames)
             .range([0, 2 * Math.PI])
             .align(0);
-        
+
         vis.y = d3.scaleRadial()
             .range([vis.innerRadius, vis.outerRadius]);
-        
+
         vis.arc = d3.arc()
             .innerRadius(vis.innerRadius)
             .outerRadius(vis.innerRadius)
@@ -63,7 +63,7 @@ class Nightingale_Rose_Chart{
             .endAngle(d => vis.x(vis.monthNames[d.data.month - 1]) + vis.x.bandwidth())
             .padAngle(5 / vis.innerRadius)
             .padRadius(vis.innerRadius);
-        
+
         vis.colorScale = {
             "Fitness": "#4e79a7",
             "Arts/Culture": "#f28e2c",
@@ -76,7 +76,7 @@ class Nightingale_Rose_Chart{
         };
 
         vis.customGreys = ["#ffffff", "#b8b6b6", "#828181", "#4e4f4e", "#000000"];
-        
+
         vis.ring = vis.svg.append('g');
         vis.innerMark = vis.svg.append('g').attr("text-anchor", "middle");
         vis.background = vis.svg.append('g').attr("text-anchor", "middle");
@@ -84,16 +84,15 @@ class Nightingale_Rose_Chart{
 
         vis.renderInnerMark();
         vis.initiateColorKey();
-        
     }
 
-    updateVis(){
+    updateVis() {
         let vis = this;
 
-        if(!vis.dataProcessed){
+        if (!vis.dataProcessed) {
             vis.processData();
         }
-        vis.y.domain([0, d3.max(vis.data, d => d3.max(d, d => d[1]))])
+        vis.y.domain([0, d3.max(vis.data, d => d3.max(d, d => d[1]))]);
 
         vis.renderRings();
         vis.renderBackground();
@@ -102,7 +101,7 @@ class Nightingale_Rose_Chart{
 
     processData() {
         let vis = this;
-    
+
         // Group the data by month and category
         let groupedData = d3.groups(vis.data, d => d.month, d => d.category)
             .map(([month, categories]) => {
@@ -112,20 +111,16 @@ class Nightingale_Rose_Chart{
                 });
                 return { month, ...categoryCounts };
             });
-    
+
         // Prepare data for stack layout
         const stack = d3.stack().keys([...new Set(vis.data.map(d => d.category))]);
         const series = stack(groupedData);
-    
+
         vis.data = series;
         vis.dataProcessed = true;
-
     }
 
-    /**
-     * This function changes the inner marks according to data. 
-     */
-    renderInnerMark(){
+    renderInnerMark() {
         let vis = this;
         let x = vis.x;
         vis.innerMark.selectAll("*").remove();
@@ -138,20 +133,20 @@ class Nightingale_Rose_Chart{
                 translate(${vis.innerRadius},0)
             `)
             .call(g => g.append("line")
-            .attr("x2", -5)
-            .attr("stroke", "#000"))
-            //We use call here because "text" and "line" is on the same hierarchy. If using append, we need to return to the parent node.
-            .call(g => g.append("text") 
-            .attr("transform", d => (x(d) + x.bandwidth() / 2 + Math.PI / 2) % (2 * Math.PI) < Math.PI
-                //If in the upper half, turn 90, else, turn -90
-                ? "rotate(90)translate(0,16)"
-                : "rotate(-90)translate(0,-9)")
-            .attr("class", "month-key")
-            .text(d => d))
-            .on("click", function(event,d) {
-                let matching_event = vis.originalData.filter(data => data.month === vis.monthNames.indexOf(d) + 1)
-                if(vis.selectedCategory != null ){
-                    matching_event = matching_event.filter(data => data.category === vis.selectedCategory)
+                .attr("x2", -5)
+                .attr("stroke", "#000"))
+            // We use call here because "text" and "line" is on the same hierarchy. If using append, we need to return to the parent node.
+            .call(g => g.append("text")
+                .attr("transform", d => (x(d) + x.bandwidth() / 2 + Math.PI / 2) % (2 * Math.PI) < Math.PI
+                    // If in the upper half, turn 90, else, turn -90
+                    ? "rotate(90)translate(0,16)"
+                    : "rotate(-90)translate(0,-9)")
+                .attr("class", "month-key")
+                .text(d => d))
+            .on("click", function (event, d) {
+                let matching_event = vis.originalData.filter(data => data.month === vis.monthNames.indexOf(d) + 1);
+                if (vis.selectedCategory != null) {
+                    matching_event = matching_event.filter(data => data.category === vis.selectedCategory);
                 }
                 const month = new CustomEvent("roseChartMonthClick", { detail: matching_event });
                 window.dispatchEvent(month);
@@ -161,37 +156,34 @@ class Nightingale_Rose_Chart{
             });
     }
 
-    /**
-     * This function changes the background according to data. 
-     */
-    renderBackground(){
+    renderBackground() {
         let vis = this;
         let y = vis.y;
         vis.background.selectAll("*").remove();
 
-        if(vis.selectedCategory == null){
+        if (vis.selectedCategory == null) {
             vis.background
-            .call(g => g.append("text")
-            .attr("y", d => -y(y.ticks(3).pop()))
-            .attr("dy", "-1em")
-            .text("Count"))
-            .call(g => g.selectAll("g")
-            .data(y.ticks(3))
-            .join("g")
-            .attr("fill", "none")
-            .call(g => g.append("circle")
-                .attr("stroke", "#000")
-                .attr("stroke-opacity", 0.5)
-                .attr("r", y))
-            .call(g => g.append("text")
-                .attr("y", d => -y(d))
-                .attr("dy", "0.35em")
-                .attr("stroke", "#fff") // A white background so that the text can stands out
-                .attr("stroke-width", 5)
-                .text(y.tickFormat(3, "s"))// Formatted so that it won't be 1k,2k
-                .clone(true)
-                .attr("fill", "#000")
-                .attr("stroke", "none")));
+                .call(g => g.append("text")
+                    .attr("y", d => -y(y.ticks(3).pop()))
+                    .attr("dy", "-1em")
+                    .text("Count"))
+                .call(g => g.selectAll("g")
+                    .data(y.ticks(3))
+                    .join("g")
+                    .attr("fill", "none")
+                    .call(g => g.append("circle")
+                        .attr("stroke", "#000")
+                        .attr("stroke-opacity", 0.5)
+                        .attr("r", y))
+                    .call(g => g.append("text")
+                        .attr("y", d => -y(d))
+                        .attr("dy", "0.35em")
+                        .attr("stroke", "#fff") // A white background so that the text can stand out
+                        .attr("stroke-width", 5)
+                        .text(y.tickFormat(3, "s")) // Formatted so that it won't be 1k,2k
+                        .clone(true)
+                        .attr("fill", "#000")
+                        .attr("stroke", "none")));
         } else {
             // Always keep the inner radius circle
             vis.background
@@ -203,10 +195,7 @@ class Nightingale_Rose_Chart{
         }
     }
 
-    /**
-     * This function initiates the color key according to data. 
-     */
-    initiateColorKey(){
+    initiateColorKey() {
         let vis = this;
 
         vis.colorkey
@@ -214,11 +203,11 @@ class Nightingale_Rose_Chart{
             .data(Object.keys(vis.colorScale))
             .join("g")
             .attr("class", "color-key")
-            .attr("transform", (d, i, nodes) => `translate(${-vis.width + 120}, ${-vis.height / 2 + 20 + i * 20})`)
+            .attr("transform", (d, i, nodes) => `translate(${-vis.width + 140}, ${-vis.height / 2 + 20 + i * 20})`)
             .call(g => g.append("rect")
-            .attr("width", 18)
-            .attr("height", 18)
-            .attr("fill", d => vis.colorScale[d]))
+                .attr("width", 18)
+                .attr("height", 18)
+                .attr("fill", d => vis.colorScale[d]))
             .on("click", (event, d) => {
                 if (vis.selectedCategory === d) {
                     vis.selectedCategory = null;
@@ -234,12 +223,12 @@ class Nightingale_Rose_Chart{
                 vis.updateVis();
             })
             .call(g => g.append("text")
-            .attr("x", 24)
-            .attr("y", 9)
-            .attr("dy", "0.35em")
-            .text(d => d))
+                .attr("x", 24)
+                .attr("y", 9)
+                .attr("dy", "0.35em")
+                .text(d => d));
     }
-    
+
     getCustomGreyScale(eventCounts) {
         const maxCount = d3.max(eventCounts);
         const colorScale = d3.scaleQuantize()
@@ -256,14 +245,14 @@ class Nightingale_Rose_Chart{
         let tooltip = d3.select("body").select(".tooltip");
         if (tooltip.empty()) {
             tooltip = d3.select("body").append("div")
-                .attr("class", "tooltip")
+                .attr("class", "tooltip");
         }
-    
+
         // Render the arcs for each category
         vis.ring.selectAll("g")
             .data(vis.data)
-            .join("g") //This creates inner tags of <g> that has the size of the categories
-            .attr("fill", d => vis.colorScale[d.key]) //Fill the color according to colors assigned
+            .join("g") // This creates inner tags of <g> that has the size of the categories
+            .attr("fill", d => vis.colorScale[d.key]) // Fill the color according to colors assigned
             .selectAll("path") // In each <g>, select path.
             .data(d => {
                 return d.map(segment => ({
@@ -271,7 +260,7 @@ class Nightingale_Rose_Chart{
                     category: d.key
                 }));
             })
-            .join("path") //Create arcs for 12 months
+            .join("path") // Create arcs for 12 months
             .attr("d", d => vis.arc(d.segment))
             .transition()
             .duration(1000)
@@ -279,13 +268,13 @@ class Nightingale_Rose_Chart{
                 const interpolateInner = d3.interpolate(vis.innerRadius, y(d.segment[0]));
                 const interpolateOuter = d3.interpolate(vis.innerRadius, vis.selectedCategory ? vis.outerRadius : y(d.segment[1]));
                 return function (t) {
-                    //This is called repeatedly to perform the arc(d) given changing inner / outer radius.
+                    // This is called repeatedly to perform the arc(d) given changing inner / outer radius.
                     return vis.arc
                         .innerRadius(interpolateInner(t))
                         .outerRadius(interpolateOuter(t))(d.segment);
                 };
-            })
-        
+            });
+
         if (!vis.selectedCategory) {
             vis.ring.selectAll("g")
                 .selectAll("path")
@@ -305,14 +294,14 @@ class Nightingale_Rose_Chart{
                 .on("mouseout", () => {
                     tooltip.style("visibility", "hidden");
                 });
-        } 
+        }
 
         if (vis.selectedCategory != null) {
             let circlesGroup = vis.ring.selectAll("g.circles-group")
                 .data([vis.data])
                 .join("g")
                 .attr("class", "circles-group");
-            
+
             const categoryData = vis.originalData.filter(d => d.category === vis.selectedCategory);
             const eventCounts = categoryData.map(d => categoryData.filter(data => data.month === d.month && data.date === d.date).length);
             const colorScale = vis.getCustomGreyScale(eventCounts);
@@ -342,12 +331,9 @@ class Nightingale_Rose_Chart{
                             const angle = startAngle + (lineIndex + 1) * (arcWidth / 4);
                             const circleRadius = paddingRadius / 2.5;
                             const date = i + 1;
-                            
+
                             const count = vis.originalData.filter(data => data.month === e.data.month && data.date === date && data.category === vis.selectedCategory).length;
                             const color = colorScale(count);
-                            // const customGreyScale = d3.scaleQuantize()
-                            //     .domain([0, 4]) // 5 distinct colors
-                            //     .range(["#ffffff", "#cccccc", "#999999", "#666666", "#000000"]);
                             circlesGroup.append("circle")
                                 .datum({ month: e.data.month, date: date, count: count })
                                 .attr("class", "date-circle")
@@ -361,33 +347,31 @@ class Nightingale_Rose_Chart{
                                 .duration(500)  // Animation duration
                                 .attr("r", circleRadius);  // End with target radius
 
-
                             circlesGroup.selectAll("circle")
-                            .on("mouseover", (event, d) => {
-                                tooltip.style("visibility", "visible")
-                                    .text(`Date: ${vis.monthNames[d.month - 1]} ${d.date}, Events: ${d.count}`)
-                                    .style("top", (event.pageY - 10) + "px")
-                                    .style("left", (event.pageX + 10) + "px");
-                            })
-                            .on("mousemove", (event) => {
-                                tooltip.style("top", (event.pageY - 10) + "px")
-                                    .style("left", (event.pageX + 10) + "px");
-                            })
-                            .on("mouseout", () => {
-                                tooltip.style("visibility", "hidden");
-                            })
-                            .on("click", function(event, d) {
-                                d3.selectAll(".date-circle").classed("selected-circle blue", false); // Remove both classes
-                                if(vis.selectedCategory === 'Sport'|| vis.selectedCategory === 'Arts/Culture'){
-                                    d3.select(this).classed("selected-circle blue", true); 
-                                }
-                                else{
-                                    d3.select(this).classed("selected-circle", true); // Add both classes
-                                }
-                                vis.renderEventCircles(d.month, d.date, vis.selectedCategory);
-                                event.stopPropagation();
-                            });                                
-                    }
+                                .on("mouseover", (event, d) => {
+                                    tooltip.style("visibility", "visible")
+                                        .text(`Date: ${vis.monthNames[d.month - 1]} ${d.date}, Events: ${d.count}`)
+                                        .style("top", (event.pageY - 10) + "px")
+                                        .style("left", (event.pageX + 10) + "px");
+                                })
+                                .on("mousemove", (event) => {
+                                    tooltip.style("top", (event.pageY - 10) + "px")
+                                        .style("left", (event.pageX + 10) + "px");
+                                })
+                                .on("mouseout", () => {
+                                    tooltip.style("visibility", "hidden");
+                                })
+                                .on("click", function (event, d) {
+                                    d3.selectAll(".date-circle").classed("selected-circle blue", false); // Remove both classes
+                                    if (vis.selectedCategory === 'Sport' || vis.selectedCategory === 'Arts/Culture') {
+                                        d3.select(this).classed("selected-circle blue", true);
+                                    } else {
+                                        d3.select(this).classed("selected-circle", true); // Add both classes
+                                    }
+                                    vis.renderEventCircles(d.month, d.date, vis.selectedCategory);
+                                    event.stopPropagation();
+                                });
+                        }
 
                         // Add count text on top of each arc
                         const textRadius = vis.outerRadius + 10;
@@ -408,9 +392,10 @@ class Nightingale_Rose_Chart{
     renderEventCircles(month, date, category, name = null) {
         let vis = this;
         vis.innerMark.selectAll("circle").remove(); // Clear existing circles
-    
+        
         const events = vis.originalData.filter(data => data.month === month && data.date === date && data.category === category);
         const packingInnerRadius = vis.innerRadius * 0.7;
+
         // Prepare the data for the circle packing layout
         const data = {
             name: "root",
@@ -428,37 +413,37 @@ class Nightingale_Rose_Chart{
                 } // Store all the necessary event data
             }))
         };
-    
+
         // Set up the circle packing layout
         const pack = d3.pack()
             .size([packingInnerRadius * 1.8, packingInnerRadius * 1.8]) // Set size based on inner radius
             .padding(5);
-    
+
         const root = d3.hierarchy(data)
             .sum(d => d.value);
-    
+
         const nodes = pack(root).leaves();
-    
+
         vis.innerMark.selectAll("circle")
             .data(nodes)
             .join("circle")
             .attr("class", "event-circle")
             .attr("cx", d => d.x - packingInnerRadius + 10) // Adjust for the center and smaller radius
             .attr("cy", d => d.y - packingInnerRadius + 10)
-            .attr("r", 0) 
+            .attr("r", 0)
             .attr("fill", vis.colorScale[category])
             .attr("fill-opacity", 0.5)  // Default opacity
             .transition()
             .duration(500)
             .attr("r", d => d.r);
-    
+
         vis.innerMark.selectAll("circle")
-            .on("mouseover", function(event, d) {
+            .on("mouseover", function (event, d) {
                 d3.select(this)
                     .attr("fill-opacity", 0.8);  // Increase opacity on hover
                 let tooltip = d3.select("body").select(".tooltip");
                 tooltip.style("visibility", "visible")
-                    .html(`${d.data.eventData.event_name}<br>${d.data.eventData.date_time}<br> ${d.data.eventData.venue_name}`) // Display event details // Display event name
+                    .html(`${d.data.eventData.event_name}<br>${d.data.eventData.date_time}<br> ${d.data.eventData.venue_name}`) // Display event details
                     .style("top", (event.pageY - 10) + "px")
                     .style("left", (event.pageX + 10) + "px");
             })
@@ -467,37 +452,36 @@ class Nightingale_Rose_Chart{
                 tooltip.style("top", (event.pageY - 10) + "px")
                     .style("left", (event.pageX + 10) + "px");
             })
-            .on("mouseout", function() {
+            .on("mouseout", function () {
                 if (!d3.select(this).classed("clicked")) {
                     d3.select(this).attr("fill-opacity", 0.5);  // Reset opacity on mouseout if not clicked
                 }
                 let tooltip = d3.select("body").select(".tooltip");
                 tooltip.style("visibility", "hidden");
             })
-            .on("click", function(event, d) {
+            .on("click", function (event, d) {
                 const isSelected = d3.select(this).classed("clicked");
 
                 d3.selectAll(".event-circle")
                     .attr("stroke", "none")
                     .attr("fill-opacity", 0.5)
                     .classed("clicked", false);  // Reset stroke and opacity for all circles
-                
+
                 if (!isSelected) {
                     d3.select(this)
                         .attr("stroke", "red")
                         .attr("stroke-width", 3)
                         .attr("fill-opacity", 0.8)  // Set stroke and opacity for clicked circle
                         .classed("clicked", true);
-        
+
                     const individualEvent = new CustomEvent("roseChartEventClick", { detail: d.data.eventData });
                     window.dispatchEvent(individualEvent);
-                }else{
+                } else {
                     const resetZoomEvent = new CustomEvent("resetZoom");
                     window.dispatchEvent(resetZoomEvent);
                 }
-
             });
-    
+
         if (name) {
             // If name is provided, treat the corresponding event as clicked
             vis.innerMark.selectAll("circle")
@@ -508,15 +492,14 @@ class Nightingale_Rose_Chart{
                 .attr("fill-opacity", 0.8);
         }
     }
-    
 
     highlightEvent(eventData) {
         const vis = this;
-        
+
         const highlight = () => {
             const circles = d3.selectAll(".date-circle");
             circles.classed("selected-circle", false); // Remove both classes
-    
+
             const matchingCircle = circles.filter(d => {
                 return (
                     d.month === new Date(eventData.date_time).getMonth() + 1 &&
@@ -526,20 +509,20 @@ class Nightingale_Rose_Chart{
 
             matchingCircle.classed("selected-circle", true); // Add both classes
 
-            matchingCircle.each(function() {
+            matchingCircle.each(function () {
                 this.scrollIntoView({ behavior: 'smooth', block: 'center' });
             });
-    
+
             vis.renderEventCircles(new Date(eventData.date_time).getMonth() + 1, new Date(eventData.date_time).getDate(), eventData.category, eventData.event_name);
         };
-    
+
         if (vis.selectedCategory !== eventData.category) {
             vis.selectedCategory = eventData.category;
-    
+
             vis.data = vis.originalData.filter(data => data.category === vis.selectedCategory);
             vis.dataProcessed = false;
             vis.updateVis();
-    
+
             setTimeout(highlight, 600);
         } else {
             highlight();
@@ -550,5 +533,4 @@ class Nightingale_Rose_Chart{
             .filter(d => d === vis.selectedCategory)
             .classed("selected", true);
     }
-    
 }

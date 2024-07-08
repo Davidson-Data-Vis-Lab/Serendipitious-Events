@@ -6,19 +6,56 @@
   <title>Vertical Sliders</title>
   <link rel="stylesheet" href="nouislider.css">
   <link rel="stylesheet" href="MagicPotion.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
     <div class="container">
-      <div id="slider1" class="slider-panel"></div>
-      <div id="slider2" class="slider-panel"></div>
-      <div id="slider3" class="slider-panel"></div>
-      <div id="slider4" class="slider-panel"></div>
+      <div class="slider-container">
+        <p>Handicap</p>
+        <div id="slider1" class="slider-panel"></div>
+      </div>
+      <div class="slider-container">
+        <p>Location</p>
+        <div id="slider2" class="slider-panel"></div>
+        <button id="toggleRandomLoc" class="toggle-button">Any location!</button>
+      </div>
+      <div class="slider-container">
+        <p>Date</p>
+        <div id="slider3" class="slider-panel"></div>
+        <button id="toggleRandomDate" class="toggle-button">Any date!</button>
+      </div>
+      <div class="slider-container">
+        <p>Age</p>
+        <div id="slider4" class="slider-panel"></div>
+        <img id="fetchRandomEventSVG" src="./assets/lottery.svg" alt="Lottery" width="30" height="30">
+      </div>
+      <div class="category-buttons-container">
+        <button id="categoryFitness" class="category-button fitness">Fitness</button>
+        <button id="categoryArts" class="category-button arts">Arts/Culture</button>
+        <button id="categorySport" class="category-button sport">Sport</button>
+        <button id="categoryAcademics" class="category-button academics">Academics</button>
+        <button id="categoryFamily" class="category-button family">Family Festival</button>
+        <button id="categoryMobile" class="category-button mobile">Mobile Unit</button>
+        <button id="categoryPerformance" class="category-button performance">Performance</button>
+      </div>
     </div>
-  
-    <svg id="svg-panel"></svg>
-  
+
+    <div id="eventPanel" class="event-panel hidden">
+      <div class="event-panel-content">
+        <span id="closePanel" class="close-button">&times;</span>
+        <h2 id="eventName">Event Name</h2>
+        <p id="eventTime">Event Time</p>
+        <p id="eventVenue">Event Venue</p>
+      </div>
+    </div>
+
+    <div id="graph-container">
+      <div id="event-bar-chart"></div>
+    </div>
+
     <script src="nouislider.js"></script>
-    <script src="wNumb.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/wnumb/wNumb.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment/min/moment.min.js"></script>
     <script src="MagicPotion.js"></script>
-  </body>
+</body>
 </html>

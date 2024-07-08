@@ -364,6 +364,10 @@ class Venue_Map {
 		return Object.values(groupedData);
 	}
 
+	resize() {
+        this.map.invalidateSize();
+    }
+
 	cleanMarkersLayers() {
 		if (this.markersLayer) {
 			this.markersLayer.clearLayers();

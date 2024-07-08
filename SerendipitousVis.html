@@ -6,22 +6,30 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
      crossorigin=""/>
-    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <link rel="stylesheet" href="nouislider.css">
+    <link rel="stylesheet" href="MagicPotion.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.smoothmarkerbouncing/Leaflet.SmoothMarkerBouncing.js"></script>
-    <link rel="stylesheet" type="text/css" href="style.css">
     <script src="https://unpkg.com/split.js/dist/split.min.js"></script>
 </head>
 <body>
-    <button id="fetchRoseButton" class = 'fetchDataButton'>Display Year Calendar</button>
-    <button id="fetchMapButton"  class = 'fetchDataButton'>Display Event Map</button>
+    <button id="fetchRoseButton" class="fetchDataButton">Display Year Calendar</button>
+    <button id="fetchMapButton" class="fetchDataButton">Display Event Map</button>
+    <button id="toggleMagicPotionButton" class="fetchDataButton">Display Magic Potion</button>
     <div id="tooltip"></div>
     <div id="visualizations">
         <div id="chart" class="viz"></div>
-        <div id="map" class="viz"></div>
-    </div>
+        <div id="map-magic-container">
+            <div id="map" class="viz"></div>
+            <div id="magicPotion" class="viz hidden"></div>
+    <script src="nouislider.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/wnumb/wNumb.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment/min/moment.min.js"></script>
     <script src="Nightingale_Rose_Chart.js"></script>
     <script src="Venue_Map.js"></script>
+    <script src="MagicPotion.js"></script>
     <script src="main.js"></script>
 </body>
 </html>
