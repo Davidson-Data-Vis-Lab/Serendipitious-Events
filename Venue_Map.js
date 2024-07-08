@@ -125,7 +125,7 @@ class Venue_Map {
         resetZoomContainer.onAdd = () => {
             const button = L.DomUtil.create('div', 'reset-zoom');
             const icon = L.DomUtil.create('img', '', button);
-            icon.src = './assets/reset-zoom.svg'; // Path to your SVG icon
+            icon.src = './assets/Reset-zoom.svg'; // Path to your SVG icon
             icon.alt = 'Reset Zoom';
             button.addEventListener('click', () => {
                 this.map.setView(this.defaultView, this.defaultZoom);
