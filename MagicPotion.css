@@ -28,6 +28,12 @@
   text-align: center;
 }
 
+.slider-container img{
+  margin-top: 10px;
+  margin-bottom: 15px;
+  align-items: center;
+}
+
 .slider-panel {
   display: flex;
   flex-direction: column;

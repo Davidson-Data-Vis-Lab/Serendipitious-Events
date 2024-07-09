@@ -2,13 +2,14 @@ document.addEventListener("DOMContentLoaded", function () {
     let splitInstance, isMagicPotionVisible = false;
 
     Split(['#chart', '#map-magic-container'], {
-        sizes: [61.8, 38.2], // Golden ratio sizes in percentages
+        sizes: [55, 45], // Golden ratio sizes in percentages
         minSize: [300, 300], // Minimum size in pixels for each pane
         gutterSize: 4, // Width of the draggable gutter in pixels
         direction: 'horizontal' // Split direction
     });
 
     let rose_chart, map, magicPotion;
+    let coordinates = [40.747552523013795, -73.98654171064388];
 
     async function fetchData() {
         try {
@@ -47,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
         magicPotionContainer.innerHTML = `
             <div class="container">
                 <div class="slider-container">
-                    <p>Handicapped Accessible</p>
+                    <img src="./assets/wheelchair.svg" alt="Fitness" height = "24" width = "24">
                     <div id="slider1" class="slider-panel"></div>
                 </div>
                 <div class="slider-container">
@@ -109,8 +110,8 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
         `;
 
-        const coordinates = [40.747552523013795, -73.98654171064388];
-        const datetime = new Date('2019-01-31T10:00:00');
+        
+        const datetime = new Date('2019-07-09T10:00:00');
         magicPotion = new MagicPotion({ parentElement: "#magicPotion" }, inputData, coordinates, datetime);
         magicPotion.initVis(); // Call initVis to dynamically add content
     }
@@ -271,7 +272,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	window.addEventListener("showEventDetail", (event) => {
         const eventData = event.detail;
-        console.log("Show event detail: ", eventData);
 
         // Highlight the event in the calendar and map
         if (rose_chart) {
@@ -279,6 +279,15 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         if (map) {
             map.addPreciseEventMarker(eventData);
+        }
+    });
+
+    window.addEventListener("updateMagicPotionCoordinates", (event) => {
+        const newCoordinates = event.detail;
+        const coordinatesArray = [newCoordinates.lat, newCoordinates.lng];
+        coordinates = coordinatesArray;
+        if (magicPotion) {
+            magicPotion.updateCoordinates(coordinates);
         }
     });
 	

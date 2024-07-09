@@ -244,6 +244,16 @@ class MagicPotion{
         }
     }
 
+    updateCoordinates(newCoordinates) {
+        this.myCoordinates = newCoordinates;
+        // Recalculate distances based on the new coordinates
+        this.data.forEach(event => {
+            event.distance_km = this.calculateDistance(event.coordinates, this.myCoordinates);
+        });
+        // Update the visualization with the new distances
+        this.updateVis();
+    }
+
     updateSliderInfo(slider, values) {
         this.sliderInfo[slider] = values;
         this.updateVis();
@@ -377,7 +387,8 @@ class MagicPotion{
 
     haversine(coords1, coords2, options = { unit: 'km' }) {
         const toRadians = (angle) => angle * (Math.PI / 180);
-    
+        
+        console.log(coords1,coords2);
         const [lat1, lon1] = coords1;
         const [lat2, lon2] = coords2;
     

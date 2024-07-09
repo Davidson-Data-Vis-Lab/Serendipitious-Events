@@ -59,6 +59,7 @@ class Venue_Map {
 			}),
 			Nature: L.icon({ iconUrl: "./assets/Nature.svg", iconSize: [38, 95] }),
 			CloseButton: L.icon({ iconUrl: "./assets/close-button.svg", iconSize: [40, 50],className: 'close-button-marker' }),
+			Home: L.icon({ iconUrl: "./assets/Home.svg", iconSize: [40, 50] }),
 		};
 
 		vis.icons = icons;
@@ -66,6 +67,7 @@ class Venue_Map {
 		vis.addLegend();
         vis.addResetZoomButton();
 		vis.addTrashButton();
+		vis.addHomeMarker();
 	}
 
 	addLegend() {
@@ -430,7 +432,31 @@ class Venue_Map {
 			const selectCategoryEvent = new CustomEvent("selectCategory", { detail: eventData.category });
         	window.dispatchEvent(selectCategoryEvent);
 		});
-}
+	}
 
+	addHomeMarker() {
+        let vis = this;
+        const initialCoordinates = vis.defaultView; // Set initial coordinates to the default view
+
+        const homeMarker = L.marker(initialCoordinates, {
+            icon: vis.icons.Home,
+            draggable: true // Make the marker draggable
+        }).addTo(vis.map);
+
+        homeMarker.on('dragend', function (e) {
+            const newCoordinates = homeMarker.getLatLng();
+            vis.updateCurrentLocation(newCoordinates);
+        });
+
+        vis.homeMarker = homeMarker;
+    }
+
+    // Update the current location when the home marker is dragged
+    updateCurrentLocation(newCoordinates) {
+        console.log('New current location:', newCoordinates);
+		this.defaultView = newCoordinates;
+        const updateCoordinates = new CustomEvent("updateMagicPotionCoordinates", { detail: newCoordinates });
+    	window.dispatchEvent(updateCoordinates);
+    }
 
 }
