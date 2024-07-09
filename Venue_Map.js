@@ -85,7 +85,7 @@ class Venue_Map {
 				<div class="legend-item" data-category="Sport"><img src="./assets/Sport.svg" alt="Sport"> Sport</div>
 				<div class="legend-item" data-category="AcademicsOutofSchoolTime"><img src="./assets/Academics.svg" alt="Academics/Out of School Time"> Academics/Out of School Time</div>
 				<div class="legend-item" data-category="ArtsCulture"><img src="./assets/Arts_Culture.svg" alt="Arts/Culture"> Arts/Culture</div>
-				<div class="legend-item" data-category="MobileUnit"><img src="./assets/Mobile_unit.svg" alt="Mobile Unit"> Mobile Unit</div>
+				<div class="legend-item" data-category="MobileUnit"><img src="./assets/Mobile_Unit.svg" alt="Mobile Unit"> Mobile Unit</div>
 				<div class="legend-item" data-category="Performance"><img src="./assets/Performance.svg" alt="Performance"> Performance</div>
 				<div class="legend-item" data-category="Nature"><img src="./assets/Nature.svg" alt="Nature"> Nature</div>
             `;

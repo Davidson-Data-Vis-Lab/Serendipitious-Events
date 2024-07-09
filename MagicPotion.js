@@ -80,7 +80,18 @@ class MagicPotion{
                 'min': 0
             },
             step: 0.1,
-            tooltips: [wNumb({ decimals: 1 }), wNumb({ decimals: 1 })]
+            tooltips: [
+                {
+                to: function (value) {
+                    return 'closer';
+                },
+                from: Number
+            }, {
+                to: function (value) {
+                    return 'farther';
+                },
+                from: Number
+            }]
         });
         
         slider2.noUiSlider.on('update', (values) => {
@@ -99,7 +110,18 @@ class MagicPotion{
                 'min': 0
             },
             step: 0.1,
-            tooltips: [wNumb({ decimals: 1 }), wNumb({ decimals: 1 })]
+            tooltips: [
+                {
+                to: function (value) {
+                    return 'sooner';
+                },
+                from: Number
+            }, {
+                to: function (value) {
+                    return 'later';
+                },
+                from: Number
+            }]
         });
         
         slider3.noUiSlider.on('update', (values) => {
