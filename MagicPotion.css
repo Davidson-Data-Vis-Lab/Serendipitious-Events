@@ -101,6 +101,7 @@
 
 .category-button.active {
   box-shadow: 0 2px #666;
+  border: 2px solid #f40000;
   transform: translateY(2px);
   filter: brightness(1);
 }
@@ -117,13 +118,14 @@
 
 .event-panel {
   position: absolute;
+  justify-content: center;
   width: 300px;
   padding: 20px;
   background-color: white;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   z-index: 1000;
   display: none; /* Initially hidden */
-  transform: translate(35%, 50%); /* Center the panel */
+  transform: translate(35%, 35%); 
 }
 
 .event-panel-content {
@@ -148,6 +150,30 @@
   transition: transform 0.3s, fill 0.3s;
 }
 
-#fetchRandomEventSVG:hover {
-  transform: scale(1.1);
+
+.submit-button-container {
+  display: flex;
+  justify-content: center;
+  width: 100%; /* Ensure it spans the full width of the parent container */
+  margin-top: 20px; /* Add some space above the button */
+}
+
+
+.submit-button {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center the text horizontally */
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px; 
+  cursor: pointer;
+  box-shadow: 0 4px #999;
+  transition: transform 0.3s, box-shadow 0.3s;
+  text-align: center; /* Ensure the text is centered */
+  font-size: 16px; /* Adjust font size as needed */
+}
+
+
+.submit-button:hover {
+  background-color: #93bae4; /* Darker shade for hover effect */
 }

@@ -78,7 +78,7 @@ class Nightingale_Rose_Chart {
         vis.customGreys = ["#ffffff", "#b8b6b6", "#828181", "#4e4f4e", "#000000"];
 
         vis.ring = vis.svg.append('g');
-        vis.innerMark = vis.svg.append('g').attr("text-anchor", "middle");
+        vis.innerMark = vis.svg.append('g').attr("text-anchor", "middle").attr("class", "inner-mark");
         vis.background = vis.svg.append('g').attr("text-anchor", "middle");
         vis.colorkey = vis.svg.append("g");
 
@@ -125,24 +125,13 @@ class Nightingale_Rose_Chart {
         let x = vis.x;
         vis.innerMark.selectAll("*").remove();
 
-        vis.innerMark.selectAll("g")
+        const monthGroups = vis.innerMark.selectAll("g")
             .data(x.domain())
             .join("g")
             .attr("transform", d => `
                 rotate(${((x(d) + x.bandwidth() / 2) * 180 / Math.PI - 90)})
                 translate(${vis.innerRadius},0)
             `)
-            .call(g => g.append("line")
-                .attr("x2", -5)
-                .attr("stroke", "#000"))
-            // We use call here because "text" and "line" is on the same hierarchy. If using append, we need to return to the parent node.
-            .call(g => g.append("text")
-                .attr("transform", d => (x(d) + x.bandwidth() / 2 + Math.PI / 2) % (2 * Math.PI) < Math.PI
-                    // If in the upper half, turn 90, else, turn -90
-                    ? "rotate(90)translate(0,16)"
-                    : "rotate(-90)translate(0,-9)")
-                .attr("class", "month-key")
-                .text(d => d))
             .on("click", function (event, d) {
                 let matching_event = vis.originalData.filter(data => data.month === vis.monthNames.indexOf(d) + 1);
                 if (vis.selectedCategory != null) {
@@ -154,6 +143,60 @@ class Nightingale_Rose_Chart {
                 const resetZoomEvent = new CustomEvent("resetLocZoom");
                 window.dispatchEvent(resetZoomEvent);
             });
+
+        monthGroups.append("rect")
+            .attr("x", -20)
+            .attr("y", -10)
+            .attr("width", 30)
+            .attr("height", 20)
+            .attr("fill", "#ddd") // Background color for the button
+            .attr("rx", 5) // Optional: add rounded corners
+            .attr("ry", 5) // Optional: add rounded corners
+            .attr("transform", d => {
+                const angle = (x(d) + x.bandwidth() / 2 + Math.PI / 2) % (2 * Math.PI);
+                return angle < Math.PI
+                    ? "rotate(90)translate(5,15)"
+                    : "rotate(-90)translate(5,-15)";
+            });
+
+        monthGroups.append("text")
+            .attr("transform", d => (x(d) + x.bandwidth() / 2 + Math.PI / 2) % (2 * Math.PI) < Math.PI
+                ? "rotate(90)translate(0,16)"
+                : "rotate(-90)translate(0,-13)")
+            .attr("class", "month-key")
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .text(d => d);
+
+        // const monthGroups = vis.innerMark.selectAll("g")
+        //     .data(x.domain())
+        //     .join("g")
+        //     .attr("transform", d => `
+        //         rotate(${((x(d) + x.bandwidth() / 2) * 180 / Math.PI - 90)})
+        //         translate(${vis.innerRadius},0)
+        //     `)
+        //     .call(g => g.append("line")
+        //         .attr("x2", -5)
+        //         .attr("stroke", "#000"))
+        //     // We use call here because "text" and "line" is on the same hierarchy. If using append, we need to return to the parent node.
+        //     .call(g => g.append("text")
+        //         .attr("transform", d => (x(d) + x.bandwidth() / 2 + Math.PI / 2) % (2 * Math.PI) < Math.PI
+        //             // If in the upper half, turn 90, else, turn -90
+        //             ? "rotate(90)translate(0,16)"
+        //             : "rotate(-90)translate(0,-9)")
+        //         .attr("class", "month-key")
+        //         .text(d => d))
+        //     .on("click", function (event, d) {
+        //         let matching_event = vis.originalData.filter(data => data.month === vis.monthNames.indexOf(d) + 1);
+        //         if (vis.selectedCategory != null) {
+        //             matching_event = matching_event.filter(data => data.category === vis.selectedCategory);
+        //         }
+        //         const month = new CustomEvent("roseChartMonthClick", { detail: matching_event });
+        //         window.dispatchEvent(month);
+
+        //         const resetZoomEvent = new CustomEvent("resetLocZoom");
+        //         window.dispatchEvent(resetZoomEvent);
+        //     });
     }
 
     renderBackground() {
@@ -286,13 +329,31 @@ class Nightingale_Rose_Chart {
                         .text(`${category} : ${eventCount}`)
                         .style("top", (event.pageY - 10) + "px")
                         .style("left", (event.pageX + 10) + "px");
+
+                        d3.select(this).classed("arc-hover", true);
                 })
                 .on("mousemove", (event) => {
                     tooltip.style("top", (event.pageY - 10) + "px")
                         .style("left", (event.pageX + 10) + "px");
                 })
-                .on("mouseout", () => {
+                .on("mouseout", function (event) {
+                    d3.select(event.currentTarget).classed("arc-hover", false);
+    
                     tooltip.style("visibility", "hidden");
+                })
+                .on("click", function (event, d) {
+                    // Filter the events for the specific category and month
+                    const matchingEvents = vis.originalData.filter(data =>
+                        data.category === d.category &&
+                        data.month === vis.monthNames.indexOf(vis.monthNames[d.segment.data.month - 1]) + 1
+                    );
+                    console.log("clicked:",matchingEvents);
+                    // Dispatch a custom event to update the venue map
+                    const eventDetail = new CustomEvent("roseChartArcClick", { detail: matchingEvents });
+                    window.dispatchEvent(eventDetail);
+    
+                    // Prevent event propagation to avoid triggering other event listeners
+                    event.stopPropagation();
                 });
         }
 

@@ -1,13 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
     let splitInstance, isMagicPotionVisible = false;
-
-    Split(['#chart', '#map-magic-container'], {
-        sizes: [55, 45], // Golden ratio sizes in percentages
-        minSize: [300, 300], // Minimum size in pixels for each pane
-        gutterSize: 4, // Width of the draggable gutter in pixels
-        direction: 'horizontal' // Split direction
-    });
-
     let rose_chart, map, magicPotion;
     let coordinates = [40.747552523013795, -73.98654171064388];
 
@@ -48,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
         magicPotionContainer.innerHTML = `
             <div class="container">
                 <div class="slider-container">
-                    <img src="./assets/wheelchair.svg" alt="Fitness" height = "24" width = "24">
+                    <img src="./assets/wheelchair.svg" alt="Fitness" height="24" width="24">
                     <div id="slider1" class="slider-panel"></div>
                 </div>
                 <div class="slider-container">
@@ -64,34 +56,37 @@ document.addEventListener("DOMContentLoaded", function () {
                 <div class="slider-container">
                     <p>Age</p>
                     <div id="slider4" class="slider-panel"></div>
-                    <img id="fetchRandomEventSVG" src="./assets/lottery.svg" alt="Lottery" width="45" height="45">
                 </div>
-                <div class="category-buttons-container">
+                <div class="category-submit">
                     <div class="category-buttons-container">
-                        <button id="categoryFitness" class="category-button">
-                            <img src="./assets/Fitness.svg" alt="Fitness" height = "24" width = "24">
+                        <button id="categoryFitness" class="category-button active">
+                            <img src="./assets/Fitness.svg" alt="Fitness" height="24" width="24">
                         </button>
-                        <button id="categoryArts" class="category-button">
-                            <img src="./assets/Arts_Culture.svg" alt="Arts/Culture" height = "24" width = "24">
+                        <button id="categoryArts" class="category-button active">
+                            <img src="./assets/Arts_Culture.svg" alt="Arts/Culture" height="24" width="24">
                         </button>
-                        <button id="categorySport" class="category-button">
-                            <img src="./assets/Sport.svg" alt="Sport" height = "24" width = "24">
+                        <button id="categorySport" class="category-button active">
+                            <img src="./assets/Sport.svg" alt="Sport" height="24" width="24">
                         </button>
-                        <button id="categoryAcademics" class="category-button">
-                            <img src="./assets/Academics.svg" alt="Academics" height = "24" width = "24">
+                        <button id="categoryAcademics" class="category-button active">
+                            <img src="./assets/Academics.svg" alt="Academics" height="24" width="24">
                         </button>
-                        <button id="categoryFamily" class="category-button">
-                            <img src="./assets/Family_Festival.svg" alt="Family Festival" height = "24" width = "24">
+                        <button id="categoryFamily" class="category-button active">
+                            <img src="./assets/Family_Festival.svg" alt="Family Festival" height="24" width="24">
                         </button>
-                        <button id="categoryMobile" class="category-button">
-                            <img src="./assets/Mobile_Unit.svg" alt="Mobile Unit" height = "24" width = "24">
+                        <button id="categoryMobile" class="category-button active">
+                            <img src="./assets/Mobile_Unit.svg" alt="Mobile Unit" height="24" width="24">
                         </button>
-                        <button id="categoryPerformance" class="category-button">
-                            <img src="./assets/Performance.svg" alt="Performance" height = "24" width = "24">
+                        <button id="categoryPerformance" class="category-button active">
+                            <img src="./assets/Performance.svg" alt="Performance" height="24" width="24">
                         </button>
-                        <button id="categoryNature" class="category-button">
-                            <img src="./assets/Nature.svg" alt="Nature" height = "24" width = "24">
+                        <button id="categoryNature" class="category-button active">
+                            <img src="./assets/Nature.svg" alt="Nature" height="24" width="24">
                         </button>
+                    </div>
+
+                    <div class="submit-button-container">
+                        <button id="fetchRandomEventSVG" class="submit-button">Submit</button>
                     </div>
                 </div>
             </div>
@@ -104,11 +99,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     <p id="eventVenue">Event Venue</p>
                 </div>
             </div>
-
-            <div id="graph-container">
-                <div id="event-bar-chart"></div>
-            </div>
         `;
+
 
         
         const datetime = new Date('2019-07-09T10:00:00');
@@ -198,7 +190,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (map) {
                     mapContainer.style.flex = 'none';
                     splitInstance = Split(['#map', '#magicPotion'], {
-                        sizes: [50, 50], 
+                        sizes: [60, 40], 
                         minSize: [300, 300],
                         gutterSize: 4, 
                         direction: 'vertical' 
@@ -288,6 +280,25 @@ document.addEventListener("DOMContentLoaded", function () {
         coordinates = coordinatesArray;
         if (magicPotion) {
             magicPotion.updateCoordinates(coordinates);
+        }
+    });
+
+    window.addEventListener("roseChartArcClick", function (event) {
+        const matchingEvents = event.detail;
+        if (!map){
+            fetchData().then(data => {
+                data.forEach(event => {
+                    event.date_time = formatDateTime(event.date_time);
+                });
+                UpdateVenueMap(data);
+            });
+        }
+        if (map) {
+            map.cleanMarkersLayers();
+            map.cleanIndividualLayer();
+            matchingEvents.forEach(event => {
+                map.addVagueEventMarker(event);
+            });
         }
     });
 	

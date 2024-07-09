@@ -62,18 +62,30 @@
 }
 
 
-.month-key{
+.inner-mark .month-key {
     cursor: pointer;
 }
 
-.month-key text {
-    font: 10px sans-serif; /* Adjust font size as needed */
+/* .inner-mark text {
+    font-size: 12px;
+    fill: #333;
+} */
+
+.inner-mark g rect:hover {
+    fill: #ccc; /* Change background color on hover */
+    cursor: pointer;
 }
 
-.month-key:hover{
-    font-weight: bold;
-    text-decoration: underline;
+.inner-mark g.selected rect {
+    fill: #aaa; /* Background color for selected button */
 }
+
+.inner-mark g text {
+    font-size: 12px;
+    fill: #333;
+    pointer-events: none; /* Prevent text from capturing mouse events */
+}
+
 
 .event-circle:hover{
     cursor: pointer;
@@ -323,4 +335,10 @@
 
 .hidden {
     display: none;
+}
+
+.arc-hover{
+    stroke: black;
+    stroke-width: 2;
+    cursor: pointer;
 }

@@ -15,7 +15,7 @@ class MagicPotion{
         };
         this.randomLoc = false;
         this.randomDate = false;
-        this.selectedCategories = [];
+        this.selectedCategories = ["Nature","Performance","Mobile Unit","Family Festival","Academics/Out of School Time","Sport","Arts/Culture","Fitness"];
         this.selectedTags = [];
     }
 
@@ -34,8 +34,6 @@ class MagicPotion{
         const eventPanel = document.getElementById('eventPanel');
         const container = document.querySelector('.container');
         const graphContainer = document.getElementById('graph-container');
-
-        this.initSVG();
 
         const categoryButtons = {
             Fitness: document.getElementById('categoryFitness'),
@@ -59,7 +57,6 @@ class MagicPotion{
             },
             step: 1,
             tooltips: [wNumb({ decimals: 0, edit: function(value) {
-                console.log(value);
                 return value == 1 ? 'Yes' : 'No';
             }})]
         });
@@ -195,9 +192,9 @@ class MagicPotion{
                 } else {
                     this.selectedCategories.push(category);
                     categoryButtons[category].classList.add('active');
+                    console.log(this.selectedCategories);
                     this.updateVis();
                 }
-                console.log(this.selectedCategories);
             });
         });
 
@@ -214,22 +211,9 @@ class MagicPotion{
             event.distance_km = distances[index];
         });
 
-        
-        this.updateSVG();
-
+        this.updateVis();
     }
 
-    initSVG() {
-        const svgHeight = 100;
-        const svgWidth = 550;
-
-        this.svg = d3.select('#event-bar-chart')
-            .append('svg')
-            .attr('width', svgWidth)
-            .attr('height', svgHeight);
-        
-        console.log("SVG is BUILD",this.svg);
-    }
 
     async fetchData() {
         try {
@@ -274,7 +258,6 @@ class MagicPotion{
         const randomEvent = this.eventData[Math.floor(Math.random() * this.eventData.length)];
 
         randomEvent.date_time = this.formatDateTime(randomEvent.date_time)
-        console.log(randomEvent)
 
         document.getElementById('eventName').textContent = randomEvent.event_name;
         document.getElementById('eventTime').textContent = randomEvent.date_time;
@@ -285,10 +268,8 @@ class MagicPotion{
         eventPanel.style.display = 'block'; // Show the panel
 
         const container = document.querySelector('.container'); 
-        const graphContainer = document.getElementById('graph-container');
 
         container.classList.add('blur-background');
-        graphContainer.classList.add('blur-background'); 
 
         const eventDetail = new CustomEvent("showEventDetail", { detail: randomEvent });
         window.dispatchEvent(eventDetail);
@@ -367,8 +348,6 @@ class MagicPotion{
 
         vis.eventData = newData;
         // console.log("Filtered events",vis.eventData);
-
-        vis.updateSVG();
     }
 
     formatDateTime(dateTime) {
@@ -387,8 +366,7 @@ class MagicPotion{
 
     haversine(coords1, coords2, options = { unit: 'km' }) {
         const toRadians = (angle) => angle * (Math.PI / 180);
-        
-        console.log(coords1,coords2);
+    
         const [lat1, lon1] = coords1;
         const [lat2, lon2] = coords2;
     
@@ -405,70 +383,4 @@ class MagicPotion{
     
         return distance;
     }
-
-    updateSVG() {
-        const vis = this;
-        const svgWidth = 550;
-        const svgHeight = 100;
-        const barWidth = 40; // Fixed bar width
-        const barHeight = 8; // Fixed bar height
-        const numColumns = 12; // Number of columns
-        const columnPadding = (svgWidth - (numColumns * barWidth)) / (numColumns - 1); // Calculate padding between columns
-    
-        // Calculate the approximate number of events per column with some randomness
-        const eventsPerColumn = Math.floor(vis.eventData.length / numColumns);
-        let columnCounts = Array(numColumns).fill(eventsPerColumn);
-        let remainingEvents = vis.eventData.length % numColumns;
-        console.log("Before:", columnCounts);
-    
-        // Distribute remaining events randomly
-        while (remainingEvents > 0) {
-            const randomIndex = Math.floor(Math.random() * numColumns);
-            columnCounts[randomIndex]++;
-            remainingEvents--;
-        }
-        console.log("After:", columnCounts);
-        // Group events by columns based on calculated counts
-        let eventIndex = 0;
-        const columns = columnCounts.map(count => {
-            const columnEvents = vis.eventData.slice(eventIndex, eventIndex + count);
-            eventIndex += count;
-            return columnEvents;
-        });
-    
-        // Flatten the columns for easy data binding
-        const flattenedData = columns.flatMap((col, colIndex) => col.map((event, rowIndex) => ({
-            ...event,
-            colIndex,
-            rowIndex
-        })));
-    
-        // Select all rectangles and bind data
-        const bars = vis.svg.selectAll('rect')
-            .data(flattenedData);
-    
-        // Update existing bars
-        bars.attr('x', d => d.colIndex * (barWidth + columnPadding))
-            .attr('y', d => svgHeight - (d.rowIndex + 1) * (barHeight + 2)) // 2px for padding
-            .attr('width', barWidth)
-            .attr('height', barHeight)
-            .attr('fill', d => `hsl(${(1 - (d.rowIndex / Math.max(...columnCounts))) * 120}, 100%, 50%)`)
-            .attr('rx', 2) // Border radius
-            .attr('ry', 2); // Border radius
-    
-        // Enter new bars
-        bars.enter()
-            .append('rect')
-            .attr('x', d => d.colIndex * (barWidth + columnPadding))
-            .attr('y', d => svgHeight - (d.rowIndex + 1) * (barHeight + 2)) // 2px for padding
-            .attr('width', barWidth)
-            .attr('height', barHeight)
-            .attr('fill', d => `hsl(${(1 - (d.rowIndex / Math.max(...columnCounts))) * 120}, 100%, 50%)`)
-            .attr('rx', 2) // Border radius
-            .attr('ry', 2); // Border radius
-    
-        // Remove old bars
-        bars.exit().remove();
-    }
-    
 }
