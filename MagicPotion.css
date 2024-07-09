@@ -69,30 +69,34 @@
 }
 
 .category-buttons-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(2, 30px);
+  gap: 10px; /* Space between buttons */
+  justify-items: center; /* Center align buttons in their columns */
+  width: 10%;
+  margin-top: 10px;
 }
 
 .category-button {
-  width: 100px; /* Set a fixed width */
+  width: 30px; /* Set a fixed width */
   height: 30px; /* Set a fixed height */
-  border-radius: 15px;
+  border-radius: 50%;
   margin: 5px 0;
   border: none;
-  color: white;
+  color: rgba(222, 211, 200, 0.956);
   cursor: pointer;
   box-shadow: 0 4px #999;
   transition: transform 0.3s, box-shadow 0.3s;
   display: flex;
   align-items: center;
   justify-content: center;
+  filter: brightness(0.85);
 }
 
 .category-button.active {
   box-shadow: 0 2px #666;
   transform: translateY(2px);
-  filter: brightness(0.75);
+  filter: brightness(1);
 }
 
 #event-bar-chart rect {
@@ -141,11 +145,3 @@
 #fetchRandomEventSVG:hover {
   transform: scale(1.1);
 }
-
-.category-button.fitness { background-color: #4e79a7; }
-.category-button.arts { background-color: #f28e2c; }
-.category-button.sport { background-color: #e15759; }
-.category-button.academics { background-color: #76b7b2; }
-.category-button.family { background-color: #59a14f; }
-.category-button.mobile { background-color: #edc949; }
-.category-button.performance { background-color: #af7aa1; }

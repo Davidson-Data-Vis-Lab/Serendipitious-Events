@@ -50,7 +50,7 @@ class Venue_Map {
 				iconSize: [38, 95],
 			}),
 			MobileUnit: L.icon({
-				iconUrl: "./assets/Mobile_unit.svg",
+				iconUrl: "./assets/Mobile_Unit.svg",
 				iconSize: [38, 95],
 			}),
 			Performance: L.icon({

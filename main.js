@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
         magicPotionContainer.innerHTML = `
             <div class="container">
                 <div class="slider-container">
-                    <p>Handicap</p>
+                    <p>Handicapped Accessible</p>
                     <div id="slider1" class="slider-panel"></div>
                 </div>
                 <div class="slider-container">
@@ -66,13 +66,32 @@ document.addEventListener("DOMContentLoaded", function () {
                     <img id="fetchRandomEventSVG" src="./assets/lottery.svg" alt="Lottery" width="45" height="45">
                 </div>
                 <div class="category-buttons-container">
-                    <button id="categoryFitness" class="category-button fitness">Fitness</button>
-                    <button id="categoryArts" class="category-button arts">Arts/Culture</button>
-                    <button id="categorySport" class="category-button sport">Sport</button>
-                    <button id="categoryAcademics" class="category-button academics">Academics</button>
-                    <button id="categoryFamily" class="category-button family">Family Festival</button>
-                    <button id="categoryMobile" class="category-button mobile">Mobile Unit</button>
-                    <button id="categoryPerformance" class="category-button performance">Performance</button>
+                    <div class="category-buttons-container">
+                        <button id="categoryFitness" class="category-button">
+                            <img src="./assets/Fitness.svg" alt="Fitness" height = "24" width = "24">
+                        </button>
+                        <button id="categoryArts" class="category-button">
+                            <img src="./assets/Arts_Culture.svg" alt="Arts/Culture" height = "24" width = "24">
+                        </button>
+                        <button id="categorySport" class="category-button">
+                            <img src="./assets/Sport.svg" alt="Sport" height = "24" width = "24">
+                        </button>
+                        <button id="categoryAcademics" class="category-button">
+                            <img src="./assets/Academics.svg" alt="Academics" height = "24" width = "24">
+                        </button>
+                        <button id="categoryFamily" class="category-button">
+                            <img src="./assets/Family_Festival.svg" alt="Family Festival" height = "24" width = "24">
+                        </button>
+                        <button id="categoryMobile" class="category-button">
+                            <img src="./assets/Mobile_Unit.svg" alt="Mobile Unit" height = "24" width = "24">
+                        </button>
+                        <button id="categoryPerformance" class="category-button">
+                            <img src="./assets/Performance.svg" alt="Performance" height = "24" width = "24">
+                        </button>
+                        <button id="categoryNature" class="category-button">
+                            <img src="./assets/Nature.svg" alt="Nature" height = "24" width = "24">
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -154,15 +173,20 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("toggleMagicPotionButton").addEventListener("click", () => {
         const magicPotionContainer = document.getElementById("magicPotion");
         const mapContainer = document.getElementById("map");
-
+    
         if (isMagicPotionVisible) {
-            // Merge the divs
-            splitInstance.destroy();
+            if (splitInstance) {
+                splitInstance.destroy();
+                splitInstance = null;
+            }
             magicPotionContainer.style.display = 'none';
-            mapContainer.style.flex = '1'; // Make map take full space
-            map.resize(); // Call the resize method
+            if (map) {
+                mapContainer.style.flex = '1'; 
+                map.resize(); 
+            }
             document.getElementById("toggleMagicPotionButton").innerText = "Display Magic Potion";
-        } else {
+        } 
+        else {
             // Split the divs
             fetchData().then(data => {
                 data.forEach(event => {
@@ -170,20 +194,25 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
                 initMagicPotion(data);
                 magicPotionContainer.style.display = "flex";
-                mapContainer.style.flex = 'none';
-                splitInstance = Split(['#map', '#magicPotion'], {
-                    sizes: [50, 50], 
-                    minSize: [300, 300],
-                    gutterSize: 4, 
-                    direction: 'vertical' 
-                });
-                map.resize(); 
+                if (map) {
+                    mapContainer.style.flex = 'none';
+                    splitInstance = Split(['#map', '#magicPotion'], {
+                        sizes: [50, 50], 
+                        minSize: [300, 300],
+                        gutterSize: 4, 
+                        direction: 'vertical' 
+                    });
+                    map.resize();
+                } 
                 document.getElementById("toggleMagicPotionButton").innerText = "Remove Magic Potion";
             });
         }
         isMagicPotionVisible = !isMagicPotionVisible;
     });
-
+    
+    
+    
+    
     window.addEventListener("resize", () => {
         if (rose_chart) {
             rose_chart.updateVis();

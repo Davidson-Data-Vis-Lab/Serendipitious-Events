@@ -44,7 +44,8 @@ class MagicPotion{
             'Academics/Out of School Time': document.getElementById('categoryAcademics'),
             'Family Festival': document.getElementById('categoryFamily'),
             'Mobile Unit': document.getElementById('categoryMobile'),
-            Performance: document.getElementById('categoryPerformance')
+            Performance: document.getElementById('categoryPerformance'),
+            Nature: document.getElementById('categoryNature')
         };
 
         noUiSlider.create(slider1, {
@@ -271,20 +272,21 @@ class MagicPotion{
             '18-35': 'Young Adult',
             '18-65': 'Adults',
             '65-100': 'Seniors',
-            '0-100': 'General Public'
+            '0-100': 'General Public',
+            '1-100': 'Adaptive'
         };
-        console.log("Original", newData.length)
+        // console.log("Original", newData)
 
         //Filter adaptive.
         if (vis.sliderInfo['slider1'][0]) {
             newData = newData.filter(event => event.tags.split(', ').includes('Adaptive'));
-            console.log("Adaptive Filter", newData.length)
+            // console.log("Adaptive Filter", newData)
         }
         
 
         //Category Filter
         newData = newData.filter(event => vis.selectedCategories.includes(event.category));
-        console.log("Category Filter", newData.length)
+        // console.log("Category Filter", newData)
 
 
         //Age Filter
@@ -296,18 +298,25 @@ class MagicPotion{
                 tags.push(value);
             }
         }
-        newData = newData.filter(event => tags.includes(event.tags));
-        console.log("Age Filter", newData.length)
+        newData = newData.filter(event => {
+            const eventTags = event.tags.split(', ');
+            return tags.some(tag => eventTags.includes(tag));
+        });
+        // console.log("Age Filter", newData)
 
         // Distance Filter
         if(!vis.randomLoc){
             const sortedDistances = newData.map(event => event.distance_km).sort((a, b) => a - b);
             const [lowerQuartileLoc, upperQuartileLoc] = vis.sliderInfo['slider2'].map(Number);
+            console.log(upperQuartileLoc)
             const lowerThresholdLoc = sortedDistances[Math.floor(lowerQuartileLoc * 0.1 * sortedDistances.length)];
             const upperThresholdLoc = sortedDistances[Math.floor(upperQuartileLoc * 0.1 * sortedDistances.length)];
+            // if(upperQuartileLoc == 10){
+            //     upperThresholdLoc = sortedDistances[Math.floor(upperQuartileLoc * 0.1 * sortedDistances.length)-1];
+            // }
             newData = newData.filter(event => event.distance_km >= lowerThresholdLoc && event.distance_km <= upperThresholdLoc);
         }
-        console.log("Distance Filter", newData.length)
+        // console.log("Distance Filter", newData)
         
 
         // Time Filter
@@ -316,14 +325,16 @@ class MagicPotion{
             const [lowerQuartileTime, upperQuartileTime] = vis.sliderInfo['slider3'].map(Number);
             const lowerThresholdTime = sortedTime[Math.floor(lowerQuartileTime * 0.1 * sortedTime.length)];
             const upperThresholdTime = sortedTime[Math.floor(upperQuartileTime * 0.1 * sortedTime.length)];
-            
+            // if(upperQuartileTime == 10){
+            //     upperThresholdTime = sortedTime[Math.floor(upperQuartileTime * 0.1 * sortedTime.length)-1];
+            // }
             newData = newData.filter(event => event.diff_in_days >= lowerThresholdTime && event.diff_in_days <= upperThresholdTime);
         }
-        console.log("Time Filter", newData.length)
+        // console.log("Time Filter", newData)
         
 
         vis.eventData = newData;
-        console.log("Filtered events",vis.eventData);
+        // console.log("Filtered events",vis.eventData);
 
         vis.updateSVG();
     }
@@ -375,6 +386,7 @@ class MagicPotion{
         const eventsPerColumn = Math.floor(vis.eventData.length / numColumns);
         let columnCounts = Array(numColumns).fill(eventsPerColumn);
         let remainingEvents = vis.eventData.length % numColumns;
+        console.log("Before:", columnCounts);
     
         // Distribute remaining events randomly
         while (remainingEvents > 0) {
@@ -382,7 +394,7 @@ class MagicPotion{
             columnCounts[randomIndex]++;
             remainingEvents--;
         }
-    
+        console.log("After:", columnCounts);
         // Group events by columns based on calculated counts
         let eventIndex = 0;
         const columns = columnCounts.map(count => {
