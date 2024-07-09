@@ -73,7 +73,7 @@
   grid-template-columns: repeat(2, 30px);
   gap: 10px; /* Space between buttons */
   justify-items: center; /* Center align buttons in their columns */
-  width: 10%;
+  width: 15%;
   margin-top: 10px;
 }
 
