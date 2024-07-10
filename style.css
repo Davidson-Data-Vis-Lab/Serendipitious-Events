@@ -66,11 +66,6 @@
     cursor: pointer;
 }
 
-/* .inner-mark text {
-    font-size: 12px;
-    fill: #333;
-} */
-
 .inner-mark g rect:hover {
     fill: #ccc; /* Change background color on hover */
     cursor: pointer;

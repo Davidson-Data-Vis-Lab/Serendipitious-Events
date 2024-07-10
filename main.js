@@ -301,5 +301,62 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
     });
-	
+
+    function startTutorial() {
+        introJs().setOptions({
+            steps: [
+                {
+                    intro: "This is a simple tour of basic features to help you familarize with the tool."
+                },
+                {
+                    element: '#chart',
+                    intro: 'This is the Year Calendar. It shows data categorized by month and category.'
+                },
+                {
+                    element: '.color-key',
+                    intro: 'This is the color key. Click on a color to find events in that category throughout the year.',
+                    position: 'right'
+                },
+                {
+                    element: '#map',
+                    intro: 'This is the venue map. Click on each blue circles to see events at a specific venue.'
+                },
+                {
+                    element: '.reset-zoom',
+                    intro: 'Use this button to reset the map zoom.'
+                },
+                {
+                    element: '.trash-container',
+                    intro: 'Use this button to clear all markers from the map.'
+                },
+                {
+                    element: '.legend-toggle',
+                    intro: 'Click to see the legend for each icon.'
+                },
+                {
+                    element: '#magicPotion',
+                    intro: 'This is the Magic Potion. You can use it to generate random events.'
+                },
+                {
+                    element: '#slider2',
+                    intro: 'Use sliders to filter your needs. For example, here you are filtering by distance to your residence.'
+                },
+                {
+                    element: '.category-button',
+                    intro: 'These are the category buttons. They are all selected by default.'
+                },
+                {
+                    element: '#fetchRandomEventSVG',
+                    intro: 'Click this button to submit and find a "random" events.'
+                },
+                {
+                    intro: 'Play around! There are more interesting features that need some digging. 👀'
+                }
+            ]
+        }).start();
+    }
+    
+    document.getElementById("startTutorialButton").addEventListener("click", startTutorial);
+   
+    
 });

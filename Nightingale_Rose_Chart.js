@@ -167,36 +167,6 @@ class Nightingale_Rose_Chart {
             .attr("text-anchor", "middle")
             .attr("alignment-baseline", "middle")
             .text(d => d);
-
-        // const monthGroups = vis.innerMark.selectAll("g")
-        //     .data(x.domain())
-        //     .join("g")
-        //     .attr("transform", d => `
-        //         rotate(${((x(d) + x.bandwidth() / 2) * 180 / Math.PI - 90)})
-        //         translate(${vis.innerRadius},0)
-        //     `)
-        //     .call(g => g.append("line")
-        //         .attr("x2", -5)
-        //         .attr("stroke", "#000"))
-        //     // We use call here because "text" and "line" is on the same hierarchy. If using append, we need to return to the parent node.
-        //     .call(g => g.append("text")
-        //         .attr("transform", d => (x(d) + x.bandwidth() / 2 + Math.PI / 2) % (2 * Math.PI) < Math.PI
-        //             // If in the upper half, turn 90, else, turn -90
-        //             ? "rotate(90)translate(0,16)"
-        //             : "rotate(-90)translate(0,-9)")
-        //         .attr("class", "month-key")
-        //         .text(d => d))
-        //     .on("click", function (event, d) {
-        //         let matching_event = vis.originalData.filter(data => data.month === vis.monthNames.indexOf(d) + 1);
-        //         if (vis.selectedCategory != null) {
-        //             matching_event = matching_event.filter(data => data.category === vis.selectedCategory);
-        //         }
-        //         const month = new CustomEvent("roseChartMonthClick", { detail: matching_event });
-        //         window.dispatchEvent(month);
-
-        //         const resetZoomEvent = new CustomEvent("resetLocZoom");
-        //         window.dispatchEvent(resetZoomEvent);
-        //     });
     }
 
     renderBackground() {
