@@ -46,11 +46,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 <div class="slider-container">
                     <p>Location</p>
                     <div id="slider2" class="slider-panel"></div>
+                    <div class = "subtext">Homebase Address</div>
                     <button id="toggleRandomLoc" class="toggle-button">Any location!</button>
                 </div>
                 <div class="slider-container">
                     <p>Date</p>
                     <div id="slider3" class="slider-panel"></div>
+                    <div class = "subtext">Today</div>
                     <button id="toggleRandomDate" class="toggle-button">Any date!</button>
                 </div>
                 <div class="slider-container">

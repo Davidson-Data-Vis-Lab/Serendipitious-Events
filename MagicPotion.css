@@ -19,12 +19,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 20px;
 }
 
 .slider-container p {
   margin-bottom: 15px;
   font-size: 14px;
+  font-weight: bold;
   text-align: center;
 }
 
@@ -40,7 +40,6 @@
   align-items: center;
   margin-left: 40px;
   margin-right: 40px;
-  margin-bottom: 20px;
   position: relative;
   height: 150px;
 }
@@ -176,4 +175,10 @@
 
 .submit-button:hover {
   background-color: #93bae4; /* Darker shade for hover effect */
+}
+
+.subtext {
+  font-size: 10px;
+  margin-top: 5px;
+  margin-bottom: 10px;
 }
