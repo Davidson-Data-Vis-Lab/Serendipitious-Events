@@ -69,7 +69,6 @@ class Venue_Map {
 		vis.addTrashButton();
 		vis.addHomeMarker();
 		vis.markersLayer = L.layerGroup().addTo(vis.map);
-		vis.updateVis();
 	}
 
 	addLegend() {
@@ -164,12 +163,16 @@ class Venue_Map {
 		this.map.setView(this.defaultView, this.defaultZoom);
     }
 
+	logLayerCount() {
+		const layerCount = this.markersLayer.getLayers().length;
+		console.log(`Number of layers in markersLayer: ${layerCount}`);
+	}
+
 	updateVis() {
 		let vis = this;
 
-		if (vis.markersLayer) {
-			vis.cleanMarkersLayers();
-		}
+		vis.cleanMarkersLayers();
+        vis.cleanIndividualLayer();
 
 		// Add circles for each data point
 		vis.data.forEach((d) => {
@@ -187,6 +190,8 @@ class Venue_Map {
 			circle.bindPopup(popupContent);
 		});
 
+		vis.map.off("popupopen");
+		
 		this.map.on("popupopen", (e) => {
 			const popupNode = e.popup._contentNode;
 			const button = popupNode.querySelector(".expand-events-btn");
@@ -196,9 +201,14 @@ class Venue_Map {
 				);
 			}
 		});
+
+		const layerCount = this.markersLayer.getLayers().length;
+		console.log(`Number of layers in markersLayer after update vis: ${layerCount}`);
+		
 	}
 
 	expandEvents(coordinates) {
+		console.log("expanded events called")
 		let vis = this;
 		const venueData = vis.data.find((d) => d.coordinates === coordinates);
 		if (!venueData) return;
@@ -214,6 +224,7 @@ class Venue_Map {
 				vis.addDotMarker(venueData);
 			}
 		});
+
 		const bounds = [];
 
 		venueData.events.forEach((event) => {
@@ -246,6 +257,10 @@ class Venue_Map {
 			const boundsLayer = L.featureGroup(bounds.map(coord => L.marker(coord)));
 			vis.map.fitBounds(boundsLayer.getBounds().pad(0.1));
 		}
+
+		const layerCount = this.markersLayer.getLayers().length;
+		console.log(`Number of layers in markersLayer after expanding events: ${layerCount}`);
+
 	}
 
 	animateMarker(marker, startLatLng, endLatLng) {
@@ -377,14 +392,12 @@ class Venue_Map {
 	cleanMarkersLayers() {
 		if (this.markersLayer) {
 			this.markersLayer.clearLayers();
-			console.log("markersLayer is cleared");
 		}
 	}
 
     cleanIndividualLayer(){
         if (this.individualLayer) {
 			this.individualLayer.clearLayers();
-			console.log("individual layer is cleared");
 		}
     }
 
@@ -459,7 +472,6 @@ class Venue_Map {
 
     // Update the current location when the home marker is dragged
     updateCurrentLocation(newCoordinates) {
-        console.log('New current location:', newCoordinates);
 		this.defaultView = newCoordinates;
         const updateCoordinates = new CustomEvent("updateMagicPotionCoordinates", { detail: newCoordinates });
     	window.dispatchEvent(updateCoordinates);

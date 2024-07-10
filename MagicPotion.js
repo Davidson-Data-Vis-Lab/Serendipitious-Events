@@ -323,10 +323,10 @@ class MagicPotion{
             const [lowerQuartileLoc, upperQuartileLoc] = vis.sliderInfo['slider2'].map(Number);
             console.log(upperQuartileLoc)
             const lowerThresholdLoc = sortedDistances[Math.floor(lowerQuartileLoc * 0.1 * sortedDistances.length)];
-            const upperThresholdLoc = sortedDistances[Math.floor(upperQuartileLoc * 0.1 * sortedDistances.length)];
-            // if(upperQuartileLoc == 10){
-            //     upperThresholdLoc = sortedDistances[Math.floor(upperQuartileLoc * 0.1 * sortedDistances.length)-1];
-            // }
+            let upperThresholdLoc = sortedDistances[Math.floor(upperQuartileLoc * 0.1 * sortedDistances.length)];
+            if(upperQuartileLoc == 10){
+                upperThresholdLoc = sortedDistances[Math.floor(upperQuartileLoc * 0.1 * sortedDistances.length)-1];
+            }
             newData = newData.filter(event => event.distance_km >= lowerThresholdLoc && event.distance_km <= upperThresholdLoc);
         }
         // console.log("Distance Filter", newData)
@@ -337,10 +337,10 @@ class MagicPotion{
             const sortedTime = newData.map(event => event.diff_in_days).sort((a, b) => a - b);
             const [lowerQuartileTime, upperQuartileTime] = vis.sliderInfo['slider3'].map(Number);
             const lowerThresholdTime = sortedTime[Math.floor(lowerQuartileTime * 0.1 * sortedTime.length)];
-            const upperThresholdTime = sortedTime[Math.floor(upperQuartileTime * 0.1 * sortedTime.length)];
-            // if(upperQuartileTime == 10){
-            //     upperThresholdTime = sortedTime[Math.floor(upperQuartileTime * 0.1 * sortedTime.length)-1];
-            // }
+            let upperThresholdTime = sortedTime[Math.floor(upperQuartileTime * 0.1 * sortedTime.length)];
+            if(upperQuartileTime == 10){
+                upperThresholdTime = sortedTime[Math.floor(upperQuartileTime * 0.1 * sortedTime.length)-1];
+            }
             newData = newData.filter(event => event.diff_in_days >= lowerThresholdTime && event.diff_in_days <= upperThresholdTime);
         }
         // console.log("Time Filter", newData)

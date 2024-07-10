@@ -143,7 +143,6 @@ document.addEventListener("DOMContentLoaded", function () {
             rose_chart.updateVis();
         }
         if (map) {
-            map.updateVis();
             map.resize(); // Call the resize method
         }
         if (magicPotion) {
