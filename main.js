@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     let splitInstance, isMagicPotionVisible = false;
     let rose_chart, map, magicPotion;
-    let coordinates = [40.747552523013795, -73.98654171064388];
+    let coordinates = [40.71155426032145, -73.96276232229434];
 
     async function fetchData() {
         try {
@@ -122,89 +122,19 @@ document.addEventListener("DOMContentLoaded", function () {
         return formattedTime;
     }
 
-    document.getElementById("fetchRoseButton").addEventListener("click", () => {
-        if (rose_chart) {
-            // Remove the rose chart if it exists
-            const parentElement = d3.select(rose_chart._config.parentElement);
-            if (parentElement) {
-                parentElement.selectAll("*").remove(); // Remove all child elements
-            }
-            rose_chart = null;
-            document.getElementById("fetchRoseButton").innerText = "Display Year Calendar";
-        } else {
-            // Fetch data and display the rose chart
-            fetchData().then(data => {
-                data.forEach(event => {
-                    event.date_time = formatDateTime(event.date_time);
-                });
-                UpdateChart(data);
-            });
-            document.getElementById("fetchRoseButton").innerText = "Remove Year Calendar";
-        }
-    });
+    async function initializeVisualizations() {
+        const data = await fetchData();
+        data.forEach(event => {
+            event.date_time = formatDateTime(event.date_time);
+        });
 
-    document.getElementById("fetchMapButton").addEventListener("click", () => {
-        if (map) {
-            const parentElement = document.querySelector(map._config.parentElement);
-            if (parentElement) {
-                const newElement = parentElement.cloneNode(false); // Clone without children
-                parentElement.parentNode.replaceChild(newElement, parentElement);
-            }
-            map = null; 
-            document.getElementById("fetchMapButton").innerText = "Display Event Map";
-        } else {
-            fetchData().then(data => {
-                data.forEach(event => {
-                    event.date_time = formatDateTime(event.date_time);
-                });
-                UpdateVenueMap(data);
-            });
-            document.getElementById("fetchMapButton").innerText = "Remove Event Map";
-        }
-    });
+        UpdateChart(data);
+        UpdateVenueMap(data);
+        initMagicPotion(data);
+        startTutorial();
+    }
 
-    document.getElementById("toggleMagicPotionButton").addEventListener("click", () => {
-        const magicPotionContainer = document.getElementById("magicPotion");
-        const mapContainer = document.getElementById("map");
-    
-        if (isMagicPotionVisible) {
-            if (splitInstance) {
-                splitInstance.destroy();
-                splitInstance = null;
-            }
-            magicPotionContainer.style.display = 'none';
-            if (map) {
-                mapContainer.style.flex = '1'; 
-                map.resize(); 
-            }
-            document.getElementById("toggleMagicPotionButton").innerText = "Display Magic Potion";
-        } 
-        else {
-            // Split the divs
-            fetchData().then(data => {
-                data.forEach(event => {
-                    event.date_time = formatDateTime(event.date_time);
-                });
-                initMagicPotion(data);
-                magicPotionContainer.style.display = "flex";
-                if (map) {
-                    mapContainer.style.flex = 'none';
-                    splitInstance = Split(['#map', '#magicPotion'], {
-                        sizes: [60, 40], 
-                        minSize: [300, 300],
-                        gutterSize: 4, 
-                        direction: 'vertical' 
-                    });
-                    map.resize();
-                } 
-                document.getElementById("toggleMagicPotionButton").innerText = "Remove Magic Potion";
-            });
-        }
-        isMagicPotionVisible = !isMagicPotionVisible;
-    });
-    
-    
-    
+    initializeVisualizations();
     
     window.addEventListener("resize", () => {
         if (rose_chart) {
@@ -310,7 +240,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 },
                 {
                     element: '#chart',
-                    intro: 'This is the Year Calendar. It shows data categorized by month and category.'
+                    intro: 'This is the year calendar. It shows data categorized by month and category.'
                 },
                 {
                     element: '.color-key',
@@ -327,7 +257,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 },
                 {
                     element: '.trash-container',
-                    intro: 'Use this button to clear all markers from the map.'
+                    intro: 'Use this button to restore the original map.'
                 },
                 {
                     element: '.legend-toggle',
@@ -347,7 +277,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 },
                 {
                     element: '#fetchRandomEventSVG',
-                    intro: 'Click this button to submit and find a "random" events.'
+                    intro: 'Click this button to submit and find an event.'
                 },
                 {
                     intro: 'Play around! There are more interesting features that need some digging. 👀'
@@ -355,8 +285,6 @@ document.addEventListener("DOMContentLoaded", function () {
             ]
         }).start();
     }
-    
-    document.getElementById("startTutorialButton").addEventListener("click", startTutorial);
    
     
 });

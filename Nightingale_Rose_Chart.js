@@ -245,9 +245,9 @@ class Nightingale_Rose_Chart {
     getCustomGreyScale(eventCounts) {
         const maxCount = d3.max(eventCounts);
         const colorScale = d3.scaleQuantize()
-            .domain([0, maxCount])
-            .range(this.customGreys);
-        return colorScale;
+            .domain([1, maxCount])
+            .range(this.customGreys.slice(1)); // Exclude white color for non-zero counts
+        return count => count === 0 ? "#ffffff" : colorScale(count);
     }
 
     renderRings() {

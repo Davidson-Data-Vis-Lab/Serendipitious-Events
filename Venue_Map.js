@@ -17,14 +17,14 @@ class Venue_Map {
 			[40.917577, -73.700272],
 		];
 
-		vis.defaultView = [40.7128, -74.006];
+		vis.defaultView = [40.71155426032145, -73.96276232229434];
         vis.defaultZoom = 12;
 
 		const map = L.map(this._config.parentElement.slice(1), {
 			maxBounds: nycBounds,
 			maxBoundsViscosity: 1.0,
 			minZoom: 8,
-		}).setView([40.7128, -74.006], 12);
+		}).setView(vis.defaultView, vis.defaultZoom);
 
 		// Add OpenStreetMap tiles to the map
 		L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -68,6 +68,8 @@ class Venue_Map {
         vis.addResetZoomButton();
 		vis.addTrashButton();
 		vis.addHomeMarker();
+		vis.markersLayer = L.layerGroup().addTo(vis.map);
+		vis.updateVis();
 	}
 
 	addLegend() {
@@ -147,8 +149,7 @@ class Venue_Map {
             icon.src = './assets/Trashbin.svg'; // Path to your SVG icon
             icon.alt = 'Remove All';
             button.addEventListener('click', () => {
-                this.cleanMarkersLayers();
-				this.cleanIndividualLayer();
+                this.clearLayersAndRegenerate();
             });
             return button;
         };
@@ -156,15 +157,19 @@ class Venue_Map {
         TrashContainer.addTo(this.map);
     }
 
+    clearLayersAndRegenerate() {
+        this.cleanMarkersLayers();
+        this.cleanIndividualLayer();
+        this.updateVis();
+		this.map.setView(this.defaultView, this.defaultZoom);
+    }
+
 	updateVis() {
 		let vis = this;
 
 		if (vis.markersLayer) {
-			vis.map.removeLayer(vis.markersLayer);
+			vis.cleanMarkersLayers();
 		}
-
-		// Create a new layer for markers
-		vis.markersLayer = L.layerGroup().addTo(this.map);
 
 		// Add circles for each data point
 		vis.data.forEach((d) => {
@@ -212,7 +217,6 @@ class Venue_Map {
 		const bounds = [];
 
 		venueData.events.forEach((event) => {
-			console.log(event)
 			const [lat, lon] = venueData.coordinates.split(",").map(Number);
 
 			const offsetLat = lat + (Math.random() - 0.5) * 0.0015;
