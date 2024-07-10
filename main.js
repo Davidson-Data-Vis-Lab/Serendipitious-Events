@@ -236,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
         introJs().setOptions({
             steps: [
                 {
-                    intro: "This is a simple tour of basic features to help you familarize with the tool."
+                    intro: "This is a simple tour of basic features to help you familarize yourself with the tool."
                 },
                 {
                     element: '#chart',
@@ -264,12 +264,16 @@ document.addEventListener("DOMContentLoaded", function () {
                     intro: 'Click to see the legend for each icon.'
                 },
                 {
+                    element: '#homeMarker',
+                    intro: 'You can drag around this house icon to set your homebase address.'
+                },
+                {
                     element: '#magicPotion',
                     intro: 'This is the Magic Potion. You can use it to generate random events.'
                 },
                 {
                     element: '#slider2',
-                    intro: 'Use sliders to filter your needs. For example, here you are filtering by distance to your residence.'
+                    intro: 'Use sliders to filter your needs. For example, here you are filtering by distance to your address.'
                 },
                 {
                     element: '.category-button',

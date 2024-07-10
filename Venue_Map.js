@@ -447,6 +447,8 @@ class Venue_Map {
             draggable: true // Make the marker draggable
         }).addTo(vis.map);
 
+		homeMarker._icon.id = 'homeMarker'; 
+
         homeMarker.on('dragend', function (e) {
             const newCoordinates = homeMarker.getLatLng();
             vis.updateCurrentLocation(newCoordinates);
