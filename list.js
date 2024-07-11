@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         eventList.innerHTML = '';
         for (const event of filteredEvents) {
             const eventDate = new Date(event.date_time);
-            const day = eventDate.getDate();
+            const day = eventDate.getUTCDate();
             const month = eventDate.toLocaleString('default', { month: 'short' });
             const categoryIconPath = categoryIcons[event.category]; 
             const categoryIconSvg = await fetchSvg(categoryIconPath);
@@ -102,10 +102,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const filteredEvents = events.filter(event => {
             const eventDate = new Date(event.date_time);
+            const eventDateOnly = new Date(eventDate.toISOString().split('T')[0]);
 
             return (
-                (!isNaN(startDateValue) && eventDate >= startDateValue) &&
-                (!isNaN(endDateValue) && eventDate <= endDateValue) &&
+                (!isNaN(startDateValue) && eventDateOnly >= startDateValue) &&
+                (!isNaN(endDateValue) && eventDateOnly <= endDateValue) &&
                 (categoryValue === "" || event.category === categoryValue)
             );
         });
@@ -118,7 +119,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const defaultEndDate = new Date(endDateFilter.value);
     const initialFilteredEvents = events.filter(event => {
         const eventDate = new Date(event.date_time);
-        return eventDate >= defaultStartDate && eventDate <= defaultEndDate;
+        const eventDateOnly = new Date(eventDate.toISOString().split('T')[0]);
+        return eventDateOnly >= defaultStartDate && eventDateOnly <= defaultEndDate;
     });
     displayEvents(initialFilteredEvents);
 
