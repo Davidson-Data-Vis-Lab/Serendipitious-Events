@@ -260,6 +260,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 position: 'right',
             },
             {
+                element: '.inner-mark',
+                intro: 'These are the events happening on that day. You can click them to add them to the venue.',
+                position: 'right',
+            },
+            {
                 element: '#map',
                 intro: 'This is the venue map. Click on each blue circle to see events at a specific venue.'
             },
