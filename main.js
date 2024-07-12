@@ -251,12 +251,12 @@ document.addEventListener("DOMContentLoaded", function () {
             },
             {
                 element: '#chart',
-                intro: 'Click on one of the color keys that seems interesting!',
+                intro: '<span style="color: red;"><strong>Click</strong></span> on one of the color keys that seems interesting!',
                 position: 'right',
             },
             {
                 element: '#chart',
-                intro: 'Great! You found the date circles. Click on them to see specific events of that day.',
+                intro: 'Great! You found the date circles. <span style="color: red;"><strong>Click</strong></span> on them to see specific events of that day.',
                 position: 'right',
             },
             {
@@ -330,6 +330,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 dateCircles.forEach(circle => {
                     circle.addEventListener('click', proceedToNextStepSix);
                 });
+            }
+            else{
+                document.querySelector('.introjs-nextbutton').style.display = 'inline-block';
             }
         });
     
