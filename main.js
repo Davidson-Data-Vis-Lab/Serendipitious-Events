@@ -234,62 +234,126 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     function startTutorial() {
-        introJs().setOptions({
-            steps: [
-                {
-                    intro: "This is a simple tour of basic features to help you familarize yourself with the tool."
-                },
-                {
-                    element: '#chart',
-                    intro: 'This is the year calendar. It shows data categorized by month and category.'
-                },
-                {
-                    element: '.color-key',
-                    intro: 'This is the color key. Click on a color to find events in that category throughout the year.',
-                    position: 'right'
-                },
-                {
-                    element: '#map',
-                    intro: 'This is the venue map. Click on each blue circles to see events at a specific venue.'
-                },
-                {
-                    element: '.reset-zoom',
-                    intro: 'Use this button to reset the map zoom.'
-                },
-                {
-                    element: '.trash-container',
-                    intro: 'Use this button to restore the original map.'
-                },
-                {
-                    element: '.legend-toggle',
-                    intro: 'Click to see the legend for each icon.'
-                },
-                {
-                    element: '#homeMarker',
-                    intro: 'You can drag around this house icon to set your homebase address.'
-                },
-                {
-                    element: '#magicPotion',
-                    intro: 'This is the Magic Potion. You can use it to generate random events.'
-                },
-                {
-                    element: '#slider2',
-                    intro: 'Use sliders to filter your needs. For example, here you are filtering by distance to your address.'
-                },
-                {
-                    element: '.category-button',
-                    intro: 'These are the category buttons. They are all selected by default.'
-                },
-                {
-                    element: '#fetchRandomEventSVG',
-                    intro: 'Click this button to submit and find an event.'
-                },
-                {
-                    intro: 'Play around! There are more interesting features that need some digging. 👀'
-                }
-            ]
-        }).start();
-    }
-   
+        const first = introJs();
+
+        const allSteps = [
+            {
+                intro: "<span style='line-height: 1.5;'>This is a simple interactive tour of the visualizations!"
+            },
+            {
+                element: '#chart',
+                intro: 'This is the year calendar. It shows data categorized by month and category.'
+            },
+            {
+                element: '.colorkeys',
+                intro: 'These are the color keys.',
+                position: 'right',
+            },
+            {
+                element: '#chart',
+                intro: 'Click on one of the color keys that seems interesting!',
+                position: 'right',
+            },
+            {
+                element: '#chart',
+                intro: 'Great! You found the date circles. Click on them to see specific events of that day.',
+                position: 'right',
+            },
+            {
+                element: '#map',
+                intro: 'This is the venue map. Click on each blue circle to see events at a specific venue.'
+            },
+            {
+                element: '.reset-zoom',
+                intro: 'Use this button to reset the map zoom.'
+            },
+            {
+                element: '.trash-container',
+                intro: 'Use this button to restore the original map.'
+            },
+            {
+                element: '.legend-toggle',
+                intro: 'Click to see the legend for each icon.'
+            },
+            {
+                element: '#homeMarker',
+                intro: 'You can drag around this house icon to set your homebase address.'
+            },
+            {
+                element: '#magicPotion',
+                intro: 'This is the Magic Potion. You can use it to generate random events.'
+            },
+            {
+                element: '#slider2',
+                intro: 'Use sliders to filter your needs. For example, here you are filtering by distance to your address.'
+            },
+            {
+                element: '.category-button',
+                intro: 'These are the category buttons. They are all selected by default.'
+            },
+            {
+                element: '#fetchRandomEventSVG',
+                intro: 'Click this button to submit and find an event.'
+            },
+            {
+                intro: 'Play around! There are more interesting features that need some digging. 👀'
+            }
+        ]
     
+        first.setOptions({
+            exitOnOverlayClick: false,
+            showBullets: false,
+            steps: allSteps
+        });
+
+    
+        let colorKeyClicked = false;
+
+        first.onafterchange(function(targetElement) {
+            if (this._currentStep === 3 && !colorKeyClicked) {
+                // Disable the 'next' button
+                document.querySelector('.introjs-nextbutton').style.display = 'none';
+                
+                // Add click event listeners to color keys
+                const colorKeys = document.querySelectorAll('.color-key');
+                colorKeys.forEach(key => {
+                    key.addEventListener('click', proceedToNextStepFive);
+                });
+            } else if (this._currentStep === 4) {
+                // Add click event listeners to date circles
+                const dateCircles = document.querySelectorAll('.date-circle');
+                dateCircles.forEach(circle => {
+                    circle.addEventListener('click', proceedToNextStepSix);
+                });
+            }
+        });
+    
+        function proceedToNextStepFive() {
+            colorKeyClicked = true;
+            // Remove event listeners from color keys
+            const colorKeys = document.querySelectorAll('.color-key');
+            colorKeys.forEach(key => {
+                key.removeEventListener('click', proceedToNextStepFive);
+            });
+    
+            // Proceed to the next step
+            first.nextStep();
+        }
+    
+        function proceedToNextStepSix() {
+            console.log("date-circle is clicked.");
+            document.querySelector('.introjs-nextbutton').style.display = 'inline-block';
+            // Remove event listeners from date circles
+            const dateCircles = document.querySelectorAll('.date-circle');
+            dateCircles.forEach(circle => {
+                circle.removeEventListener('click', proceedToNextStepSix);
+            });
+    
+            // Proceed to the next step
+            first.nextStep();
+        }
+    
+        first.start();
+    }
+
 });

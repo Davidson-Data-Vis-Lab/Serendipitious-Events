@@ -80,7 +80,7 @@ class Nightingale_Rose_Chart {
         vis.ring = vis.svg.append('g');
         vis.innerMark = vis.svg.append('g').attr("text-anchor", "middle").attr("class", "inner-mark");
         vis.background = vis.svg.append('g').attr("text-anchor", "middle");
-        vis.colorkey = vis.svg.append("g");
+        vis.colorkey = vis.svg.append("g").attr("class", "colorkeys");
 
         vis.renderInnerMark();
         vis.initiateColorKey();
